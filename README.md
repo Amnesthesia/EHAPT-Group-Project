@@ -243,7 +243,7 @@ above. Before filtering there were 77 results.
 * 4-9 running services found (SMB most interesting?)
 * 1 High rated vulnerability
 
-## Port Summary
+## Services & Ports
 
 | Port | Protocol | Service 		|
 |:----:|:--------:|-------------|
