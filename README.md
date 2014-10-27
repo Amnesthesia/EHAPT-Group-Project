@@ -24,12 +24,8 @@ EHAPT-Group-Project
 |23		 | tcp			|	telnetd 		|
 |80		 | tcp			| lighttpd 1.4.26 |
 
----
-title: Scan Report
 
-
-## Scan
-=======
+## Scan Report (OpenVAS)
 
 This document reports on the results of an automatic security scan. The
 report first summarises the results found. Then, for each host, the
@@ -53,11 +49,11 @@ the threat level "Debug" are not shown. Issues with the threat level
 This report contains all 2 results selected by the filtering described
 above. Before filtering there were 77 results.
 
---------------- ------------------------------
+--------------- 
 Scan started:   **Mon Oct 27 02:13:47 2014**
 
 Scan ended:     **Mon Oct 27 03:05:42 2014**
---------------- ------------------------------
+---------------
 
 ### Host Summary
 ------------
@@ -132,7 +128,7 @@ filtering described above.  Before filtering there were 77 results.
 |Threat:| High (CVSS: 7.5)								|
 |Port:  | http (80/tcp)										|
 
-|**References:**||
+|**References:**|
 |:--------------|:--|
 |CVE:| CVE-2014-2323,CVE-2014-2324|
 |BID:| 66153,66157 |
