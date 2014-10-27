@@ -198,7 +198,8 @@ Scan ended:   **Mon Oct 27 03:05:42 2014 UTC**
 |**Description:**|
 |:---------------|
 |Distributed Computing Environment (DCE) services running on the remote host <br>can be enumerated by connecting on port 135 and doing the appropriate queries. <br> An attacker may use this fact to gain more knowledge <br>about the remote host.
-|**Solution: ** Filter incoming traffic to this port.|
+|**Solution:** |
+|Filter incoming traffic to this port.|
 
 
 |Issue| Info|
@@ -319,6 +320,7 @@ about the remote host.</td></tr>
 <tr>
 <th>Solution:</th><td>Filter incoming traffic to these ports</td>
 </tr>
+</table>
 
 ----------------------------------------
 
@@ -377,11 +379,12 @@ about the remote host.</td></tr>
 |**Description:**|
 |:---------------|
 |This host is missing a critical security update according to Microsoft Bulletin MS10-012.|
-|Vulnerability Insight:<br><ul><li> An input validation error exists while processing SMB requests and can<br>be exploited to cause a buffer overflow via a specially crafted SMB packet.</li><li> An error exists in the SMB implementation while parsing SMB packets during<br>the Negotiate phase causing memory corruption via a specially crafted SMB<br>packet.</li><li> NULL pointer dereference error exists in SMB while verifying the 'share'<br>and 'servername' fields in SMB packets causing denial of service.</li><li> A lack of cryptographic entropy when the SMB server generates challenges<br>during SMB NTLM authentication and can be exploited to bypass the<br>authentication mechanism.</li>|
+|**Vulnerability Insight:**|
+|<ul><li> An input validation error exists while processing SMB requests and can<br>be exploited to cause a buffer overflow via a specially crafted SMB packet.</li><li> An error exists in the SMB implementation while parsing SMB packets during<br>the Negotiate phase causing memory corruption via a specially crafted SMB<br>packet.</li><li> NULL pointer dereference error exists in SMB while verifying the 'share'<br>and 'servername' fields in SMB packets causing denial of service.</li><li> A lack of cryptographic entropy when the SMB server generates challenges<br>during SMB NTLM authentication and can be exploited to bypass the<br>authentication mechanism.</li>|
 |**Impact:**|
 | Successful exploitation will allow remote attackers to execute arbitrary<br>code or cause a denial of service or bypass the authentication mechanism<br>via brute force technique.|
 |**Impact Level:** System/Application|
-| Affected Software/OS: <br><ul><li>Microsoft Windows 7 </li><li>Microsoft Windows 2000 Service Pack and prior</li><li>Microsoft Windows XP Service Pack 3 and prior</li><li>Microsoft Windows Vista Service Pack 2 and prior</li><li>Microsoft Windows Server 2003 Service Pack 2 and prior</li><li>Microsoft Windows Server 2008 Service Pack 2 and prior</li><li>
+| Affected Software/OS: <br><ul><li>Microsoft Windows 7 </li><li>Microsoft Windows 2000 Service Pack and prior</li><li>Microsoft Windows XP Service Pack 3 and prior</li><li>Microsoft Windows Vista Service Pack 2 and prior</li><li>Microsoft Windows Server 2003 Service Pack 2 and prior</li><li>Microsoft Windows Server 2008 Service Pack 2 and prior</li>
 |**Solution:**|
 | Run Windows Update and update the listed hotfixes or download and<br>update mentioned hotfixes in the advisory from the below link,<br>http://www.microsoft.com/technet/security/bulletin/ms10-012.mspx|
 
