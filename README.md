@@ -128,15 +128,17 @@ filtering described above.  Before filtering there were 77 results.
 |Threat:| High (CVSS: 7.5)								|
 |Port:  | http (80/tcp)										|
 
-|**References:**||
-|Type|Info|
-|:--------------|:--|
-|CVE:| CVE-2014-2323,CVE-2014-2324|
-|BID:| 66153,66157 |
-|URL:| http://osvdb.org/104381|
-|URL:| http://osvdb.org/104382|
-|URL:| http://seclists.org/oss-sec/2014/q1/561]|
-|URL:| http://download.lighttpd.net/lighttpd/security/lighttpd_sa_2014_01.txt|
+<table>
+	<tr>
+		<th colspan="2">References</th>
+	</tr>
+	<tr><td>CVE:</td><td> CVE-2014-2323,CVE-2014-2324</td></tr>
+	<tr><td>BID:</td><td> 66153,66157</td></tr>
+	<tr><td>URL:</td><td> http://osvdb.org/104381</td></tr>
+	<tr><td>URL:</td><td> http://osvdb.org/104382</td></tr>
+	<tr><td>URL:</td><td> http://seclists.org/oss-sec/2014/q1/561</td></tr>
+	<tr><td>URL:</td><td> http://download.lighttpd.net/lighttpd/security/lighttpd_sa_2014_01.txt</td></tr>
+</table>
 
 
 
