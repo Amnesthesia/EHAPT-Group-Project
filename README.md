@@ -21,9 +21,8 @@ Thought I'd summarize some data about each host here. Feel free to update this d
 
 ## Scan Report (OpenVAS)
 
------------
-Scan started: **Mon Oct 27 02:13:47 2014 UTC** Scan ended:   **Mon Oct 27 03:05:42 2014 UTC**
------------
+* Scan started: **Mon Oct 27 02:13:47 2014 UTC** 
+* Scan ended:   **Mon Oct 27 03:05:42 2014 UTC**
 
 ### Report Summary
 ------------
@@ -169,9 +168,9 @@ the threat level "Debug" are not shown. Issues with the threat level
 This report contains all 2 results selected by the filtering described
 above. Before filtering there were 77 results.
 
---------------- 
-Scan started:   **Mon Oct 27 02:13:47 2014** Scan ended:     **Mon Oct 27 03:05:42 2014**
----------------
+* Scan started:   **Mon Oct 27 02:13:47 2014** 
+* Scan ended:     **Mon Oct 27 03:05:42 2014**
+
 
 ### Report Summary
 ------------
@@ -291,9 +290,10 @@ Issues with the threat level "False Positive" are not shown.
 This report contains all 5 results selected by the
 filtering described above.  Before filtering there were 77 results.
 
------------
-Scan started: **Mon Oct 27 02:13:47 2014 UTC** Scan ended:   **Mon Oct 27 03:05:42 2014 UTC**
------------
+
+* Scan started: **Mon Oct 27 02:13:47 2014 UTC** 
+* Scan ended:   **Mon Oct 27 03:05:42 2014 UTC**
+
 
 ### Report Summary
 
