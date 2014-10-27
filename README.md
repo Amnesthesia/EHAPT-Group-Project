@@ -4,7 +4,11 @@ Thought I'd summarize some data about each host here. Feel free to update this d
 
 # OpenBSD 4.x
 ---------
-## Host Fingerprint
+## Host Details
+
+* OpenBSD 3.8 - 4.7
+* 4 running daemons found
+* 3 Medium vulnerabilities (SSH most interesting?)
 
 ## Services & Ports
 
@@ -18,8 +22,7 @@ Thought I'd summarize some data about each host here. Feel free to update this d
 ## Scan Report (OpenVAS)
 
 -----------
-Scan started: **Mon Oct 27 02:13:47 2014 UTC**
-Scan ended:   **Mon Oct 27 03:05:42 2014 UTC**
+Scan started: **Mon Oct 27 02:13:47 2014 UTC** Scan ended:   **Mon Oct 27 03:05:42 2014 UTC**
 -----------
 
 ### Report Summary
@@ -47,12 +50,13 @@ Scan ended:   **Mon Oct 27 03:05:42 2014 UTC**
 
 | Issue | Info														|
 |:------|:--------------------------------|
+|**Threat:**| **Medium (CVSS: 2.6)**|
 |NVT:   |TCP timestamps |
 |OID:   | 1.3.6.1.4.1.25623.1.0.80091|
-|Threat:| Medium (CVSS: 2.6)|
 |Port:  | general/tcp|
 
 |**Description:**|
+|:---------------|
 |It was detected that the host implements RFC1323.<br>The following timestamps were retrieved with a delay of 1 seconds in-between:|
 |Paket 1: 721791790|
 |Paket 2: -351001889|
@@ -68,9 +72,9 @@ Scan ended:   **Mon Oct 27 03:05:42 2014 UTC**
 
 | Issue | Info														|
 |:------|:--------------------------------|
+|**Threat:**| **Medium (CVSS: 5.0)**|
 |NVT:   | OpenSSH Legacy Certificate Signing Information Disclosure Vulnerability|
 |OID:   | 1.3.6.1.4.1.25623.1.0.103064|
-|Threat:| Medium (CVSS: 5.0)|
 |Port:  | ssh (22/tcp)|
 
 |**Description:**|
@@ -96,9 +100,9 @@ Scan ended:   **Mon Oct 27 03:05:42 2014 UTC**
 
 | Issue | Info														|
 |:------|:--------------------------------|
+|**Threat:**|**Medium (CVSS: 3.5)**|
 |NVT:   |openssh-server Forced Command Handling Information Disclosure Vulnerability|
 |OID:   |1.3.6.1.4.1.25623.1.0.103503|
-|Threat:|Medium (CVSS: 3.5)|
 |Port:  |ssh (22/tcp)|
 
 |**Description:**|
@@ -128,7 +132,10 @@ Scan ended:   **Mon Oct 27 03:05:42 2014 UTC**
 # Ubuntu 10.04.3
 ---------
 
-## Host Fingerprint
+## Host Details
+* Linux 2.6.17 - 2.6.36
+* 2 running daemons found (lighttpd most interesting?)
+* 1 High rated vulnerability
 
 ## Services & Ports
 
@@ -163,8 +170,7 @@ This report contains all 2 results selected by the filtering described
 above. Before filtering there were 77 results.
 
 --------------- 
-Scan started:   **Mon Oct 27 02:13:47 2014**
-Scan ended:     **Mon Oct 27 03:05:42 2014**
+Scan started:   **Mon Oct 27 02:13:47 2014** Scan ended:     **Mon Oct 27 03:05:42 2014**
 ---------------
 
 ### Report Summary
@@ -193,10 +199,31 @@ Scan ended:     **Mon Oct 27 03:05:42 2014**
 
 | Issue | Info														|
 |:------|:--------------------------------|
-|NVT:   | TCP timestamps
+|Threat:| High (CVSS: 7.5)								|
+|NVT:   | Lighttpd Multiple vulnerabilities|
+|OID:   | 1.3.6.1.4.1.25623.1.0.802072 		|
+|Port:  | http (80/tcp)										|
+
+<table>
+	<tr>
+		<th colspan="2">References</th>
+	</tr>
+	<tr><td>CVE:</td><td> CVE-2014-2323,CVE-2014-2324</td></tr>
+	<tr><td>BID:</td><td> 66153,66157</td></tr>
+	<tr><td>URL:</td><td> http://osvdb.org/104381</td></tr>
+	<tr><td>URL:</td><td> http://osvdb.org/104382</td></tr>
+	<tr><td>URL:</td><td> http://seclists.org/oss-sec/2014/q1/561</td></tr>
+	<tr><td>URL:</td><td> http://download.lighttpd.net/lighttpd/security/lighttpd_sa_2014_01.txt</td></tr>
+</table>
+
+-----------------------
+
+| Issue | Info														|
+|:------|:--------------------------------|
+|**Threat:** |**Medium (CVSS: 2.6)**	|
+|NVT:   | TCP timestamps	|
 |OID:    |1.3.6.1.4.1.25623.1.0.80091
-|Threat: |Medium (CVSS: 2.6)
-|Port:   |general/tcp
+|Port:   |general/tcp	|
 
 |**Description**|
 |:--------------|
@@ -212,27 +239,6 @@ Scan ended:     **Mon Oct 27 03:05:42 2014**
 	<tr><td>URL:</td><td> http://www.ietf.org/rfc/rfc1323.txt</td></tr>
 </table>
 
----------------------
-
-
-| Issue | Info														|
-|:------|:--------------------------------|
-|NVT:   | Lighttpd Multiple vulnerabilities|
-|OID:   | 1.3.6.1.4.1.25623.1.0.802072 		|
-|Threat:| High (CVSS: 7.5)								|
-|Port:  | http (80/tcp)										|
-
-<table>
-	<tr>
-		<th colspan="2">References</th>
-	</tr>
-	<tr><td>CVE:</td><td> CVE-2014-2323,CVE-2014-2324</td></tr>
-	<tr><td>BID:</td><td> 66153,66157</td></tr>
-	<tr><td>URL:</td><td> http://osvdb.org/104381</td></tr>
-	<tr><td>URL:</td><td> http://osvdb.org/104382</td></tr>
-	<tr><td>URL:</td><td> http://seclists.org/oss-sec/2014/q1/561</td></tr>
-	<tr><td>URL:</td><td> http://download.lighttpd.net/lighttpd/security/lighttpd_sa_2014_01.txt</td></tr>
-</table>
 
 
 
@@ -240,7 +246,11 @@ Scan ended:     **Mon Oct 27 03:05:42 2014**
 # Windows Vista Business (build 6000)
 ---------
 
-## Host Fingerprint
+## Host Details
+* Windows Vista Business (build 6000)
+* nmap guesses Windows 7 SP0-SP1 / Server 2008 / Win8
+* 4-9 running services found (SMB most interesting?)
+* 1 High rated vulnerability
 
 ## Port Summary
 
@@ -282,12 +292,10 @@ This report contains all 5 results selected by the
 filtering described above.  Before filtering there were 77 results.
 
 -----------
-Scan started: **Mon Oct 27 02:13:47 2014 UTC**
-Scan ended:   **Mon Oct 27 03:05:42 2014 UTC**
+Scan started: **Mon Oct 27 02:13:47 2014 UTC** Scan ended:   **Mon Oct 27 03:05:42 2014 UTC**
 -----------
 
 ### Report Summary
-------------
 
 | Host            |  Start  				 |  End      		    |  High   |  Medium |  Low    |  Log    | False Positive |
 |:---------------:|:----------------:|:----------------:|:-------:|:-------:|:-------:|:-------:|:--------------:|
@@ -301,11 +309,43 @@ Scan ended:   **Mon Oct 27 03:05:42 2014 UTC**
 ----------------------------------------
 
 
+|Issue| Info|
+|:----|:----|
+|**Threat:**| **High (CVSS: 10.0)**|
+|NVT: |   Microsoft Windows SMB Server NTLM Multiple Vulnerabilities (971468)|
+|OID: |   1.3.6.1.4.1.25623.1.0.902269|
+|Port:|   microsoft-ds (445/tcp)|
+
+|**Description:**|
+|:---------------|
+|This host is missing a critical security update according to Microsoft Bulletin MS10-012.|
+|**Vulnerability Insight:**|
+|<ul><li> An input validation error exists while processing SMB requests and can<br>be exploited to cause a buffer overflow via a specially crafted SMB packet.</li><li> An error exists in the SMB implementation while parsing SMB packets during<br>the Negotiate phase causing memory corruption via a specially crafted SMB<br>packet.</li><li> NULL pointer dereference error exists in SMB while verifying the 'share'<br>and 'servername' fields in SMB packets causing denial of service.</li><li> A lack of cryptographic entropy when the SMB server generates challenges<br>during SMB NTLM authentication and can be exploited to bypass the<br>authentication mechanism.</li>|
+|**Impact:**|
+| Successful exploitation will allow remote attackers to execute arbitrary<br>code or cause a denial of service or bypass the authentication mechanism<br>via brute force technique.|
+|**Impact Level:** System/Application|
+| Affected Software/OS: <br><ul><li>Microsoft Windows 7 </li><li>Microsoft Windows 2000 Service Pack and prior</li><li>Microsoft Windows XP Service Pack 3 and prior</li><li>Microsoft Windows Vista Service Pack 2 and prior</li><li>Microsoft Windows Server 2003 Service Pack 2 and prior</li><li>Microsoft Windows Server 2008 Service Pack 2 and prior</li>
+|**Solution:**|
+| Run Windows Update and update the listed hotfixes or download and<br>update mentioned hotfixes in the advisory from the below link,<br>http://www.microsoft.com/technet/security/bulletin/ms10-012.mspx|
+
+<table>
+	<tr>
+		<th colspan="2">References</th>
+	</tr>
+	<tr><td>CVE:</td><td>CVE-2010-0020,CVE-2010-0021,CVE-2010-0022,CVE-2010-0231</td></tr>
+  <tr><td>URL:</td><td>http://secunia.com/advisories/38510/</td></tr>
+  <tr><td>URL:</td><td>http://support.microsoft.com/kb/971468</td></tr>
+  <tr><td>URL:</td><td>http://www.vupen.com/english/advisories/2010/0345</td></tr>
+  <tr><td>URL:</td><td>http://www.microsoft.com/technet/security/bulletin/ms10-012.mspx</td></tr>
+</table>
+
+------------------
+
 |Issue | Info |
 |:-----|:-----|
+|**Threat:**|**Medium (CVSS: 5.0)**|
 |NVT:  |  DCE Services Enumeration |
 |OID:  |  1.3.6.1.4.1.25623.1.0.10736|
-|Threat:| Medium (CVSS: 5.0)|
 |Port: |  epmap (135/tcp)|
 
 |**Description:**|
@@ -317,9 +357,9 @@ Scan ended:   **Mon Oct 27 03:05:42 2014 UTC**
 
 |Issue| Info|
 |:----|:----|
+|**Threat:**|**Medium (CVSS: 5.0)**|
 |NVT: |   DCE Services Enumeration|
 |OID: |   1.3.6.1.4.1.25623.1.0.10736|
-|Threat:| Medium (CVSS: 5.0)|
 |Port: |  epmap (135/tcp)|
 
 <table>
@@ -439,9 +479,9 @@ about the remote host.</td></tr>
 
 |Issue| Info|
 |:----|:----|
+|**Threat:**| **Medium (CVSS: 3.3)** |
 |NVT: | Source routed packets |
 |OID: | 1.3.6.1.4.1.25623.1.0.11834 |
-|Threat:| Medium (CVSS: 3.3) |
 |Port:| general/tcp |
 
 |**Description:**|
@@ -461,9 +501,9 @@ about the remote host.</td></tr>
 
 |Issue| Info|
 |:----|:----|
+|**Threat:| Medium (CVSS: 2.6)** |
 |NVT: |   TCP timestamps|
 |OID: |   1.3.6.1.4.1.25623.1.0.80091|
-|Threat:| Medium (CVSS: 2.6) |
 |Port: |  general/tcp |
 
 |**Description:**|
@@ -480,34 +520,3 @@ about the remote host.</td></tr>
 	<tr><td>URL:</td><td> http://www.ietf.org/rfc/rfc1323.txt</td></tr>
 </table>
 
-------------------------------
-
-|Issue| Info|
-|:----|:----|
-|NVT: |   Microsoft Windows SMB Server NTLM Multiple Vulnerabilities (971468)|
-|OID: |   1.3.6.1.4.1.25623.1.0.902269|
-|Threat:| High (CVSS: 10.0)|
-|Port:|   microsoft-ds (445/tcp)|
-
-|**Description:**|
-|:---------------|
-|This host is missing a critical security update according to Microsoft Bulletin MS10-012.|
-|**Vulnerability Insight:**|
-|<ul><li> An input validation error exists while processing SMB requests and can<br>be exploited to cause a buffer overflow via a specially crafted SMB packet.</li><li> An error exists in the SMB implementation while parsing SMB packets during<br>the Negotiate phase causing memory corruption via a specially crafted SMB<br>packet.</li><li> NULL pointer dereference error exists in SMB while verifying the 'share'<br>and 'servername' fields in SMB packets causing denial of service.</li><li> A lack of cryptographic entropy when the SMB server generates challenges<br>during SMB NTLM authentication and can be exploited to bypass the<br>authentication mechanism.</li>|
-|**Impact:**|
-| Successful exploitation will allow remote attackers to execute arbitrary<br>code or cause a denial of service or bypass the authentication mechanism<br>via brute force technique.|
-|**Impact Level:** System/Application|
-| Affected Software/OS: <br><ul><li>Microsoft Windows 7 </li><li>Microsoft Windows 2000 Service Pack and prior</li><li>Microsoft Windows XP Service Pack 3 and prior</li><li>Microsoft Windows Vista Service Pack 2 and prior</li><li>Microsoft Windows Server 2003 Service Pack 2 and prior</li><li>Microsoft Windows Server 2008 Service Pack 2 and prior</li>
-|**Solution:**|
-| Run Windows Update and update the listed hotfixes or download and<br>update mentioned hotfixes in the advisory from the below link,<br>http://www.microsoft.com/technet/security/bulletin/ms10-012.mspx|
-
-<table>
-	<tr>
-		<th colspan="2">References</th>
-	</tr>
-	<tr><td>CVE:</td><td>CVE-2010-0020,CVE-2010-0021,CVE-2010-0022,CVE-2010-0231</td></tr>
-  <tr><td>URL:</td><td>http://secunia.com/advisories/38510/</td></tr>
-  <tr><td>URL:</td><td>http://support.microsoft.com/kb/971468</td></tr>
-  <tr><td>URL:</td><td>http://www.vupen.com/english/advisories/2010/0345</td></tr>
-  <tr><td>URL:</td><td>http://www.microsoft.com/technet/security/bulletin/ms10-012.mspx</td></tr>
-</table>
