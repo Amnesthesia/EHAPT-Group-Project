@@ -128,7 +128,8 @@ filtering described above.  Before filtering there were 77 results.
 |Threat:| High (CVSS: 7.5)								|
 |Port:  | http (80/tcp)										|
 
-|**References:**|
+|**References:**||
+|Type|Info|
 |:--------------|:--|
 |CVE:| CVE-2014-2323,CVE-2014-2324|
 |BID:| 66153,66157 |
