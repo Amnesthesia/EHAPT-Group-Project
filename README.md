@@ -211,9 +211,9 @@ Scan ended:   **Mon Oct 27 03:05:42 2014 UTC**
 
 <table>
 <tr><th colspan="2">Description:</th></tr>
-<tr><td colspan="2">Distributed Computing Environment (DCE) services running on the remote host
-can be enumerated by connecting on port 135 and doing the appropriate queries.
-An attacker may use this fact to gain more knowledge
+<tr><td colspan="2">Distributed Computing Environment (DCE) services running on the remote host<br>
+can be enumerated by connecting on port 135 and doing the appropriate queries.<br>
+An attacker may use this fact to gain more knowledge<br>
 about the remote host.</td></tr>
 <tr><td colspan="2">Here is the list of DCE services running on this host:</td></tr>
 <tr>
@@ -221,10 +221,10 @@ about the remote host.</td></tr>
 </tr>
 <tr>
 	<td></td>
-	<td><table><tr>
-		<td>UUID:</td><td>d95afe70-a6d5-4259-822e-2c84da1ddb0d, version 1</td>
-    <td>Endpoint:</td><td>ncacn_ip_tcp:192.168.248.131[49152]</td>
-	</tr></table></td>
+	<td><table>
+	<tr><td>UUID:</td><td>d95afe70-a6d5-4259-822e-2c84da1ddb0d, version 1</td></tr>
+  <tr><td>Endpoint:</td><td>ncacn_ip_tcp:192.168.248.131[49152]</td></tr>
+	</table></td>
 </tr>
 
 <tr>
