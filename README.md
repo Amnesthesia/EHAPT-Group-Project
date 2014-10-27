@@ -1,9 +1,10 @@
 EHAPT-Group-Project
 ===================
-
+Thought I'd summarize some data about each host here. Feel free to update this document!
 
 # OpenBSD 4.x
 ---------
+## Host Fingerprint
 
 ## Services & Ports
 
@@ -14,8 +15,120 @@ EHAPT-Group-Project
 |37		 | tcp			|  time(32bit)|
 |113	 | tcp			| ident				|
 
+## Scan Report (OpenVAS)
+
+-----------
+Scan started: **Mon Oct 27 02:13:47 2014 UTC**
+Scan ended:   **Mon Oct 27 03:05:42 2014 UTC**
+-----------
+
+### Report Summary
+------------
+
+| Host            |  Start  				 |  End      		    |  High   |  Medium |  Low    |  Log    | False Positive |
+|:---------------:|:----------------:|:----------------:|:-------:|:-------:|:-------:|:-------:|:--------------:|
+|192.168.248.130  |Oct 27, (02:14:02)|Oct 27, (02:58:57)|  0      |   3     |    0    |     0   |      0				 |
+|									|									 |									|					|					|					|					|								 |
+|Total: 1					|									 |                  |  0      |   3     |    0    |     0   |      0         |
+-------------------
+
+
+### Port Summary for Host 192.168.248.130 (OpenBSD 4.x)
+
+
+| Service (Port) |  Threat Level |
+|:---------------|---------------|
+|  ssh (22/tcp)  | Medium				 |
+|  general/tcp   | Medium        |
+
+
+
+### Security Issues for Host 192.168.248.130 (OpenBSD 4.x)
+
+| Issue | Info														|
+|:------|:--------------------------------|
+|NVT:   |TCP timestamps |
+|OID:   | 1.3.6.1.4.1.25623.1.0.80091|
+|Threat:| Medium (CVSS: 2.6)|
+|Port:  | general/tcp|
+
+|**Description:**|
+|It was detected that the host implements RFC1323.<br>The following timestamps were retrieved with a delay of 1 seconds in-between:|
+|Paket 1: 721791790|
+|Paket 2: -351001889|
+
+<table>
+	<tr>
+		<th colspan="2">References</th>
+	</tr>
+	<tr><td>URL:</td><td>http://www.ietf.org/rfc/rfc1323.txt</td></tr>
+</table>
+
+-------------------------
+
+| Issue | Info														|
+|:------|:--------------------------------|
+|NVT:   | OpenSSH Legacy Certificate Signing Information Disclosure Vulnerability|
+|OID:   | 1.3.6.1.4.1.25623.1.0.103064|
+|Threat:| Medium (CVSS: 5.0)|
+|Port:  | ssh (22/tcp)|
+
+|**Description:**|
+|:---------------|
+|Checks whether OpenSSH is prone to an information-disclosure vulnerability.<br>Successful exploits will allow attackers to gain access to sensitive<br>information; this may lead to further attacks.<br>Versions 5.6 and 5.7 of OpenSSH are vulnerable.<br>|
+|**Vulnerability Detection:**|
+|The SSH banner is analysed for presence of openssh and the version<br>information is then taken from that banner.|
+|**Solution:**|
+|Updates are available. Please see the references for more information.|
+
+<table>
+	<tr>
+		<th colspan="2">References</th>
+	</tr>
+	<tr><td>CVE:</td><td>CVE-2011-0539</td></tr>
+  <tr><td>BID:</td><td>46155</td></tr>
+  <tr><td>URL:</td><td>https://www.securityfocus.com/bid/46155</td></tr>
+  <tr><td>URL:</td><td>http://www.openssh.com/txt/release-5.8</td></tr>
+  <tr><td>URL:</td><td>http://www.openssh.com</td></tr>
+</table>
+
+-------------------------
+
+| Issue | Info														|
+|:------|:--------------------------------|
+|NVT:   |openssh-server Forced Command Handling Information Disclosure Vulnerability|
+|OID:   |1.3.6.1.4.1.25623.1.0.103503|
+|Threat:|Medium (CVSS: 3.5)|
+|Port:  |ssh (22/tcp)|
+
+|**Description:**|
+|:---------------|
+|According to its banner, the version of OpenSSH installed on the remote<br>host is older than 5.7:|
+ ssh-2.0-openssh_5.6|
+|**Summary:**|
+|The auth_parse_options function in auth-options.c in sshd in OpenSSH before 5.7<br>provides debug messages containing authorized_keys command options, which allows<br>remote authenticated users to obtain potentially sensitive information by<br>reading these messages, as demonstrated by the shared user account required by Gitolite.<br>**NOTE:** this can cross privilege boundaries because a user account may<br>intentionally have no shell or filesystem access, and therefore may have no<br>supported way to read an authorized_keys file in its own home directory.<br>OpenSSH before 5.7 is affected;|
+|**Solution:**|
+|Updates are available. Please see the references for more information.|
+
+<table>
+	<tr>
+		<th colspan="2">References</th>
+	</tr>
+	<tr><td>CVE:</td><td>CVE-2012-0814</td></tr>
+  <tr><td>BID:</td><td>51702</td></tr>
+  <tr><td>URL:</td><td>http://www.securityfocus.com/bid/51702</td></tr>
+  <tr><td>URL:</td><td>http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=657445</td></tr>
+  <tr><td>URL:</td><td>http://packages.debian.org/squeeze/openssh-server</td></tr>
+  <tr><td>URL:</td><td>https://downloads.avaya.com/css/P8/documents/100161262</td></tr>
+</table>
+
+
+
+
 # Ubuntu 10.04.3
 ---------
+
+## Host Fingerprint
 
 ## Services & Ports
 
@@ -51,11 +164,10 @@ above. Before filtering there were 77 results.
 
 --------------- 
 Scan started:   **Mon Oct 27 02:13:47 2014**
-
 Scan ended:     **Mon Oct 27 03:05:42 2014**
 ---------------
 
-### Host Summary
+### Report Summary
 ------------
 
 | Host            |  Start  				 |  End      		    |  High   |  Medium |  Low    |  Log    | False Positive |
@@ -66,7 +178,7 @@ Scan ended:     **Mon Oct 27 03:05:42 2014**
 -------------------
 
 
-### Port Summary for Host 192.168.248.129
+### Port Summary for Host 192.168.248.129 (Ubuntu 10.04.3)
 
 
 | Service (Port) |  Threat Level |
@@ -76,7 +188,7 @@ Scan ended:     **Mon Oct 27 03:05:42 2014**
 
 
 
-### Security Issues for Host 192.168.248.129
+### Security Issues for Host 192.168.248.129 (Ubuntu 10.04.3)
 ----------------------------------------
 
 | Issue | Info														|
@@ -128,7 +240,9 @@ Scan ended:     **Mon Oct 27 03:05:42 2014**
 # Windows Vista Business (build 6000)
 ---------
 
-## Services & Ports
+## Host Fingerprint
+
+## Port Summary
 
 | Port | Protocol | Service 		|
 |:----:|:--------:|-------------|
@@ -169,11 +283,10 @@ filtering described above.  Before filtering there were 77 results.
 
 -----------
 Scan started: **Mon Oct 27 02:13:47 2014 UTC**
-
 Scan ended:   **Mon Oct 27 03:05:42 2014 UTC**
 -----------
 
-### Host Summary
+### Report Summary
 ------------
 
 | Host            |  Start  				 |  End      		    |  High   |  Medium |  Low    |  Log    | False Positive |
@@ -184,7 +297,7 @@ Scan ended:   **Mon Oct 27 03:05:42 2014 UTC**
 -------------------
 
 
-### Security Issues for Host 192.168.248.131
+### Security Issues for Host 192.168.248.131 (Windows Vista)
 ----------------------------------------
 
 
@@ -392,7 +505,7 @@ about the remote host.</td></tr>
 	<tr>
 		<th colspan="2">References</th>
 	</tr>
-	<tr><td>CVE:</td><td> CVE-2010-0020,CVE-2010-0021,CVE-2010-0022,CVE-2010-0231</td>
+	<tr><td>CVE:</td><td>CVE-2010-0020,CVE-2010-0021,CVE-2010-0022,CVE-2010-0231</td></tr>
   <tr><td>URL:</td><td>http://secunia.com/advisories/38510/</td></tr>
   <tr><td>URL:</td><td>http://support.microsoft.com/kb/971468</td></tr>
   <tr><td>URL:</td><td>http://www.vupen.com/english/advisories/2010/0345</td></tr>
