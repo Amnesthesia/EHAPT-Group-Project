@@ -1,10 +1,6 @@
-EHAPT-Group-Project
-===================
 Thought I'd summarize some data about each host here. Feel free to update this document!
 
 # OpenBSD 4.x
----------
-## Host Details
 
 * OpenBSD 3.8 - 4.7
 * 4 running daemons found
@@ -129,9 +125,7 @@ Thought I'd summarize some data about each host here. Feel free to update this d
 
 
 # Ubuntu 10.04.3
----------
 
-## Host Details
 * Linux 2.6.17 - 2.6.36
 * 2 running daemons found (lighttpd most interesting?)
 * 1 High rated vulnerability
@@ -243,9 +237,7 @@ above. Before filtering there were 77 results.
 
 
 # Windows Vista Business (build 6000)
----------
 
-## Host Details
 * Windows Vista Business (build 6000)
 * nmap guesses Windows 7 SP0-SP1 / Server 2008 / Win8
 * 4-9 running services found (SMB most interesting?)
