@@ -87,7 +87,7 @@ filtering described above.  Before filtering there were 77 results.
 
 | Host            |  Start  				 |  End      		    |  High   |  Medium |  Low    |  Log    | False Positive |
 |:---------------:|:----------------:|:----------------:|:-------:|:-------:|:-------:|:-------:|:--------------:|
-|[192.168.248.129]|Oct 27, (02:14:02)|Oct 27, (02:58:57)|  1      |   1     |    0    |     0   |      0				 |
+|192.168.248.129  |Oct 27, (02:14:02)|Oct 27, (02:58:57)|  1      |   1     |    0    |     0   |      0				 |
 |									|									 |									|					|					|					|					|								 |
 |Total: 1					|									 |                  |  1      |   1     |    0    |     0   |      0         |
 -------------------
@@ -120,8 +120,9 @@ filtering described above.  Before filtering there were 77 results.
 |Paket 1: 1776245 |
 |Paket 2: 1776498 |
 
-#### References:
-URL: [http://www.ietf.org/rfc/rfc1323.txt]
+|**References:**|
+|:--------------|
+|URL: http://www.ietf.org/rfc/rfc1323.txt|
 
 
 | Issue | Info														|
@@ -131,14 +132,14 @@ URL: [http://www.ietf.org/rfc/rfc1323.txt]
 |Threat:| High (CVSS: 7.5)								|
 |Port:  | http (80/tcp)										|
 
-|**References:**|
-|:--------------|
-|CVE: CVE-2014-2323,CVE-2014-2324|
-|BID: 66153,66157 |
-|URL: [http://osvdb.org/104381]|
-|URL: [http://osvdb.org/104382]|
-|URL: [http://seclists.org/oss-sec/2014/q1/561]|
-|URL: [http://download.lighttpd.net/lighttpd/security/lighttpd_sa_2014_01.txt]|
+|**References:**||
+|:--------------|:--|
+|CVE:| CVE-2014-2323,CVE-2014-2324|
+|BID:| 66153,66157 |
+|URL:| http://osvdb.org/104381|
+|URL:| http://osvdb.org/104382|
+|URL:| http://seclists.org/oss-sec/2014/q1/561]|
+|URL:| http://download.lighttpd.net/lighttpd/security/lighttpd_sa_2014_01.txt|
 
 
 
