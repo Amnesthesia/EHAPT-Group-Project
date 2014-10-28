@@ -17,7 +17,7 @@ Thought I'd summarize some data about each host here. Feel free to update this d
 
 
 
-# Ubuntu 10.04.3
+# ~~Ubuntu 10.04.3~~
 
 * Linux 2.6.17 - 2.6.36
 * 2 running daemons found (lighttpd most interesting?)
