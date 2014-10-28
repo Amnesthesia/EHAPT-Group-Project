@@ -595,6 +595,12 @@ STOP_ON_SUCCESS => true
 msf auxiliary(smb_login) > run
 
 [*] 192.168.248.131:445 SMB - Starting SMB login bruteforce
+
+...
+
+[-] 192.168.248.131:445 SMB - Failed: 'WORKSTATION\Admin:082807', Login Failed: The server responded with error: STATUS_LOGON_FAILURE (Command=115 Wordcount=0)
+...
+
 ```
 
 So far ... Nothing. :(
