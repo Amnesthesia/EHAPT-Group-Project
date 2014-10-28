@@ -93,7 +93,8 @@ Content-Length: 1275
 Date: Tue, 28 Oct 2014 01:15:15 GMT
 Server: lighttpd/1.4.26
 
----response end---```
+---response end---
+```
 
 This leads to no change, however, increasing the colons in [::1] to more than 7 will cause Internal Server Error. This is documented [here](http://redmine.lighttpd.net/projects/lighttpd/repository/revisions/2959/diff/) on line 47 in requests.c
 
