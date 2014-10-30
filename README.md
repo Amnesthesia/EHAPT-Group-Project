@@ -861,6 +861,8 @@ $
 
 As we saw earlier, `sshd` runs as root. Maybe, just MAYBE ... if we can change the path and prepend it with a directory that contains a file with an identical name, that first runs ANOTHER command, and *then* proceeds to pass on information to the program that was originally called ... we could get it executed as root perhaps?
 
+Or, if any of the processes that a) run as root or b) has the setuid flag set tries to execute a file *without the full path* we could place a file with the same name in our `/home/` directory and **make sure** it's the first match when it runs, and drop us into a root shell?
+
 
 # Scan Results (OpenVAS)
 
