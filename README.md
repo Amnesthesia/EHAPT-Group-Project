@@ -589,6 +589,8 @@ msf auxiliary(smb_login) > run
 
 So far ... Nothing. :(
 
+----------------------
+
 # OpenBSD 4.x
 
 * OpenBSD 3.8 - 4.7
@@ -624,6 +626,8 @@ $
 ```
 
 Well, look at that -- surely we could! Well, what now then? That is one *damn* provocative MotD, so I sure hope we can get in here.
+
+-------------------------
 
 ## Going on BSD Safari
 Now that we're in, we should have a look around. As Les Stroud in Survivorman said, when you set up camp in unknown territory (this BSD box), it's always a good plan to make a map for yourself. Scout the area, mark the landmarks -- maybe it won't be exact, but it'll guide you in the future. Let's listen to Survivorman and do exactly that!
@@ -780,6 +784,8 @@ Login incorrect
 
 Damnit :(
 
+--------------------
+
 ### Where am I allowed?
 
 So let's find out where we can read and write, this may be useful information, right? Time to scan for group or world writeable directories and see what we get.
@@ -844,9 +850,12 @@ $ find / -user root -perm -4000 -exec ls -ldoh {} \;
 ```
 
 I also performed a scan for what files we can read, but the list is very exhaustive ... After using this command: `find / -type d \( -perm -o=r \) -exec ls -ldoha {} \;` the most interesting things were some files in the `/var/log` directory; the `/etc/` configuration directory (including SSH! The possibly vulnerable service we found which we can read the configuration for!)
+-----------------------------------
 
 ## What can we actually do here?
 Yeah ... Then there's that... SSH is in default configuration and not vulnerable to the OpenSSH wildcard exploit it seems :( And here we are ...
+
+-----------------
 
 ### Ideas
 After checking the `/etc/ssh/sshd_config` we see only *one* command that is not commented out:
@@ -863,7 +872,7 @@ As we saw earlier, `sshd` runs as root. Maybe, just MAYBE ... if we can change t
 
 Or, if any of the processes that a) run as root or b) has the setuid flag set tries to execute a file *without the full path* we could place a file with the same name in our `/home/` directory and **make sure** it's the first match when it runs, and drop us into a root shell?
 
-
+------------------------
 # Scan Results (OpenVAS)
 
 Here's the OpenVAS Scan Reports for each VM:
