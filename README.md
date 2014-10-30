@@ -635,6 +635,34 @@ $ uname -a
 OpenBSD m2.localdomain 4.8 GENERIC#136 i386
 ```
 
+### What's going on here?
+Let's check our environment, what's going on here?
+
+```
+$ ps aux
+USER       PID %CPU %MEM   VSZ   RSS TT  STAT  STARTED       TIME COMMAND
+root         1  0.0  0.1   392   312 ??  Is    Tue06AM    0:00.01 /sbin/init
+_dhcp     5637  0.0  0.1   392   372 ??  Is    Tue06AM    0:00.44 dhclient: vic
+root     20526  0.0  0.3   480   688 ??  Is    Tue06AM    0:00.01 syslogd: [pri
+_syslogd  7494  0.0  0.3   512   752 ??  I     Tue06AM    0:00.49 syslogd -a /v
+root      7692  0.0  0.2   504   408 ??  Is    Tue06AM    0:00.01 pflogd: [priv
+_pflogd   4907  0.0  0.1   568   312 ??  S     Tue06AM    0:09.07 pflogd: [runn
+root     21096  0.0  0.5   812  1188 ??  Is    Tue06AM    0:00.03 /usr/sbin/ssh
+root     12289  0.0  0.3   504   732 ??  Is    Tue06AM    0:00.01 inetd
+root     13869  0.0  0.3   528   788 ??  Ss    Tue06AM    0:00.33 cron
+root      2343  0.0  0.7  1144  1856 ??  Ss    Tue06AM    0:03.82 sendmail: acc
+root     19989  0.0  1.0  3396  2560 ??  Is     6:51PM    0:00.05 sshd: jane [p
+jane     19099  0.0  0.8  3368  1984 ??  S      6:51PM    0:00.87 sshd: jane@tt
+jane     20266  0.0  0.2   484   456 p0- I     Tue03PM    0:00.10 /bin/sh /bin/
+jane      3901  0.0  0.2   452   440 p0  Ss     6:51PM    0:00.05 -ksh (ksh)
+jane     14796  0.0  0.1   388   208 p0  R+     7:15PM    0:00.01 ps -aux
+root     22269  0.0  0.1   344   308 C0- I     Tue06AM    0:00.26 dhclient: vic
+jane     30041  0.0  0.2   428   432 C0  Is+   Tue06AM    0:00.10 -ksh (ksh)
+$
+```
+
+Oooh ... That's kind of interesting -- sshd runs as root. We should probably remember that.
+
 ### Who lives here?
 Let's check who else is on this box! 
 
@@ -699,6 +727,8 @@ drwx------  2 john  users  512 Oct  3 21:04 .ssh
 $
 
 ```
+
+Damn. If only we could read John's `.ssh` directory ... 
 
 Hmm, well, okay -- looks like tarzan is *actually* called `John Clayton III`. So ... maybe John is *Tarzan*? I have 3 ideas: 
 
@@ -817,6 +847,19 @@ I also performed a scan for what files we can read, but the list is very exhaust
 
 ## What can we actually do here?
 Yeah ... Then there's that... SSH is in default configuration and not vulnerable to the OpenSSH wildcard exploit it seems :( And here we are ...
+
+### Ideas
+After checking the `/etc/ssh/sshd_config` we see only *one* command that is not commented out:
+```
+$ cat /etc/ssh/sshd_config                                                     
+...
+# override default of no subsystems
+Subsystem       sftp    /usr/libexec/sftp-server
+...
+$ 
+```
+
+As we saw earlier, `sshd` runs as root. Maybe, just MAYBE ... if we can change the path and prepend it with a directory that contains a file with an identical name, that first runs ANOTHER command, and *then* proceeds to pass on information to the program that was originally called ... we could get it executed as root perhaps?
 
 
 # Scan Results (OpenVAS)
