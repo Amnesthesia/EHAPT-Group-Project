@@ -1,21 +1,5 @@
 Thought I'd summarize some data about each host here. Feel free to update this document!
 
-# OpenBSD 4.x
-
-* OpenBSD 3.8 - 4.7
-* 4 running daemons found
-* 3 Medium vulnerabilities (SSH most interesting?)
-
-## Services & Ports
-
-| Port | Protocol | Service 		|
-|:----:|:--------:|-------------|
-|13		 | tcp			|	daytime 		|
-|22		 | tcp			| OpenSSH 5.6 |
-|37		 | tcp			|  time(32bit)|
-|113	 | tcp			| ident				|
-
-
 
 # ~~Ubuntu 10.04.3~~
 
@@ -604,6 +588,236 @@ msf auxiliary(smb_login) > run
 ```
 
 So far ... Nothing. :(
+
+# OpenBSD 4.x
+
+* OpenBSD 3.8 - 4.7
+* 4 running daemons found
+* 3 Medium vulnerabilities (SSH most interesting?)
+
+## Services & Ports
+
+| Port | Protocol | Service 		|
+|:----:|:--------:|-------------|
+|13		 | tcp			|	daytime 		|
+|22		 | tcp			| OpenSSH 5.6 |
+|37		 | tcp			|  time(32bit)|
+|113	 | tcp			| ident				|
+
+## Gaining Access
+We have logged in as John on the Ubuntu box. We found User to work on the Windows box. And we have a third user, whose password we have also cracked: `jane`. 
+
+The nmap scan, the results presented above, shows that OpenSSH is running on the default SSH port, so let's see if we can get in as the third user.
+
+```
+root@battlestation:~# ssh jane@192.168.248.130
+jane@192.168.248.130's password: 
+Last login: Wed Oct 29 18:13:59 2014
+Hi - congratulations on the login!
+Well played!
+
+Can you evolve and get more useful access here?
+
+ - L
+
+$
+```
+
+Well, look at that -- surely we could! Well, what now then? That is one *damn* provocative MotD, so I sure hope we can get in here.
+
+## Going on BSD Safari
+Now that we're in, we should have a look around. As Les Stroud in Survivorman said, when you set up camp in unknown territory (this BSD box), it's always a good plan to make a map for yourself. Scout the area, mark the landmarks -- maybe it won't be exact, but it'll guide you in the future. Let's listen to Survivorman and do exactly that!
+
+First of all -- **where am I?!**
+
+```
+$ uname -a
+OpenBSD m2.localdomain 4.8 GENERIC#136 i386
+```
+
+### Who lives here?
+Let's check who else is on this box! 
+
+```
+$ cat /etc/passwd                                                              
+root:*:0:0:Charlie &:/root:/bin/ksh
+...
+john:*:1000:10:John:/home/john:/bin/ksh
+jane:*:1001:1001:Jane:/home/jane:/bin/ksh
+tarzan:*:1002:1002:John Clayton III:/home/tarzan:/bin/ksh
+$
+```
+
+Alright, that's interesting. John is on here too? And Tarzan, Jane's Romeo?
+
+```
+$ cat /etc/group                                                               
+wheel:*:0:root,john
+...
+kmem:*:2:root
+sys:*:3:root
+tty:*:4:root
+operator:*:5:root
+...
+staff:*:20:root
+...
+sshd:*:27:
+...
+guest:*:31:root
+...
+jane:*:1001:
+tarzan:*:1002:
+$ 
+
+```
+
+Okay, so we have mainly one interesting group here: `wheel`. The sudoers group. It seems that once again, John is privileged - while tarzan and jane are not.
+
+Let's check out Tarzan's `/home/`, and why not John's as well? After all, John is the boss here.
+
+```
+$ ls -la /home/tarzan
+total 32
+drwxr-xr-x  3 tarzan  tarzan  512 Oct  3 21:54 .
+drwxr-xr-x  5 root    wheel   512 Oct  3 21:54 ..
+-rw-r--r--  1 tarzan  tarzan   22 Oct  3 21:54 .Xdefaults
+-rw-r--r--  1 tarzan  tarzan  773 Oct  3 21:54 .cshrc
+-rw-r--r--  1 tarzan  tarzan  398 Oct  3 21:54 .login
+-rw-r--r--  1 tarzan  tarzan  113 Oct  3 21:54 .mailrc
+-rw-r--r--  1 tarzan  tarzan  218 Oct  3 21:54 .profile
+drwx------  2 tarzan  tarzan  512 Oct  3 21:54 .ssh
+$ ls -la /home/john
+total 32
+drwxr-xr-x  3 john  users  512 Oct  3 21:02 .
+drwxr-xr-x  5 root  wheel  512 Oct  3 21:54 ..
+-rw-r--r--  1 john  users   22 Aug 16  2010 .Xdefaults
+-rw-r--r--  1 john  users  773 Aug 16  2010 .cshrc
+-rw-r--r--  1 john  users  398 Aug 16  2010 .login
+-rw-r--r--  1 john  users  113 Aug 16  2010 .mailrc
+-rw-r--r--  1 john  users  218 Aug 16  2010 .profile
+drwx------  2 john  users  512 Oct  3 21:04 .ssh
+$
+
+```
+
+Hmm, well, okay -- looks like tarzan is *actually* called `John Clayton III`. So ... maybe John is *Tarzan*? I have 3 ideas: 
+
+* Maybe tarzan has John's password?
+* Maybe john has the same password as on Ubuntu?
+* Maybe tarzan has the *other* thing printed in Ubuntu's TCP distress signal?
+
+Recall:
+
+```
+root@battlestation:~# dsniff -t 23/tcp=telnet
+dsniff: listening on eth0
+-------------
+10/28/14 03:31:48 tcp 172.16.57.129.27008 -> 172.16.57.130.23 (telnet)
+john
+meTarzanSuperUser
+sudo su +
+meTarzanSuperUser
+AiAiAi....
+```
+
+Unfortunately, both `sudo su +` and `AiAiAi....` were followed by strange (possibly unicode) characters we couldn't really see in our terminal.
+
+But, let's try these logins!
+
+#### Tarzan! It's Jane! Let me in!
+
+```
+$ login tarzan
+Password: [meTarzanSuperUser]
+Login incorrect
+$ Login tarzan
+Password: [AiAiAi....]
+Login incorrect
+```
+
+Well then ... What about John?
+
+#### JOHN!
+
+```
+$ login john
+Password: [meTarzanSuperUser
+Login incorrect
+$ login john
+Password: [AiAiAi....]
+Login incorrect
+```
+
+Damnit :(
+
+### Where am I allowed?
+
+So let's find out where we can read and write, this may be useful information, right? Time to scan for group or world writeable directories and see what we get.
+
+```
+$ find / -type d \( -perm -g+w -or -perm -o+w \) -exec ls -ldoha {} \;
+drwxrwxr-x  2 root  wsrc  -  512B Aug 16  2010 /usr/obj
+drwxrwxr-x  2 root  wsrc  -  512B Aug 16  2010 /usr/src
+drwxrwxr-x  2 root  wsrc  -  512B Aug 16  2010 /usr/xobj
+drwxrwxrwt  2 root  wheel  -  512B Oct 29 01:30 /tmp
+drwxrws---  2 root  wheel  -  512B Aug 16  2010 /var/audit
+drwxrwx---  2 root  authpf  -  512B Aug 16  2010 /var/authpf
+drwxrwx---  2 root  wheel  -  512B Oct  3 21:02 /var/crash
+drwxrwx--T  2 root  crontab  -  512B Aug 16  2010 /var/cron/atjobs
+drwx-wx--T  2 root  crontab  -  512B Oct 28 06:07 /var/cron/tabs
+drwxrwxr-x  5 root  games  -  512B Oct  3 21:02 /var/games
+drwxrwxr-x  3 root  games  -  512B Aug 16  2010 /var/games/hackdir
+drwxrwx---  2 root  games  -  512B Aug 16  2010 /var/games/hackdir/save
+drwxrwxr-x  2 root  games  -  512B Aug 16  2010 /var/games/phantasia
+drwxrwxr-x  2 root  games  -  512B Aug 16  2010 /var/games/save
+drwxrwxr-x  2 root  named  -  512B Aug 16  2010 /var/named/tmp
+drwxrwxr-x  2 root  named  -  512B Aug 16  2010 /var/named/slave
+drwxrwx---  2 smmsp  smmsp  -  512B Oct 29 01:30 /var/spool/clientmqueue
+drwxrwxr-t  2 uucp  dialer  -  512B Aug 16  2010 /var/spool/lock
+drwxrwxr-x  2 root  daemon  -  512B Aug 16  2010 /var/spool/output
+drwxrwxr-t  2 uucp  daemon  -  512B Aug 16  2010 /var/spool/uucppublic
+drwxrwxrwt  3 root  wheel  -  512B Aug 16  2010 /var/tmp
+drwxrwxrwt  2 root  wheel  -  512B Oct 28 18:58 /var/tmp/vi.recover
+$ 
+```
+
+
+### Can I hitch a ride?
+Well, alright ... Now we know where we can go, but is there perhaps a way for us to expand our cybernetic consciousness here? Perhaps ... we can find a path to the enlightened one, the Bodhisattva of this system, the second to root: `john`. Or, can we become that person?
+
+Let's check what files have the `setuid` bit set, and are owned by root. Perhaps if we're lucky, we can hitch a ride and perform some sort of action through one of those files if we're lucky?
+
+```
+$ find / -user root -perm -4000 -exec ls -ldoh {} \;
+-r-sr-xr-x  3 root  bin  - 24.4K Aug 16  2010 /usr/bin/chfn
+-r-sr-xr-x  3 root  bin  - 24.4K Aug 16  2010 /usr/bin/chpass
+-r-sr-xr-x  3 root  bin  - 24.4K Aug 16  2010 /usr/bin/chsh
+-r-sr-sr-x  1 root  daemon  - 23.6K Aug 16  2010 /usr/bin/lpr
+-r-sr-sr-x  1 root  daemon  - 22.1K Aug 16  2010 /usr/bin/lprm
+-r-sr-xr-x  1 root  bin  - 26.2K Aug 16  2010 /usr/bin/passwd
+-r-sr-xr-x  1 root  bin  - 10.1K Aug 16  2010 /usr/bin/rsh
+-r-sr-xr-x  1 root  bin  - 14.6K Aug 16  2010 /usr/bin/su
+-r-sr-xr-x  2 root  bin  -  123K Aug 16  2010 /usr/bin/sudo
+-r-sr-xr-x  2 root  bin  -  123K Aug 16  2010 /usr/bin/sudoedit
+-r-sr-xr-x  1 root  bin  -  9.8K Aug 16  2010 /usr/libexec/lockspool
+-r-sr-xr-x  1 root  bin  -  164K Aug 16  2010 /usr/libexec/ssh-keysign
+-r-sr-sr-x  2 root  authpf  - 21.9K Aug 16  2010 /usr/sbin/authpf
+-r-sr-sr-x  2 root  authpf  - 21.9K Aug 16  2010 /usr/sbin/authpf-noip
+-r-sr-x---  1 root  network  -  391K Aug 16  2010 /usr/sbin/ppp
+-r-sr-x---  1 root  network  -  106K Aug 16  2010 /usr/sbin/pppd
+-r-sr-x---  1 root  network  - 10.4K Aug 16  2010 /usr/sbin/sliplogin
+-r-sr-xr-x  1 root  bin  -  181K Aug 16  2010 /usr/sbin/traceroute
+-r-sr-xr-x  1 root  bin  -  181K Aug 16  2010 /usr/sbin/traceroute6
+-r-sr-xr-x  1 root  bin  -  210K Aug 16  2010 /sbin/ping
+-r-sr-xr-x  1 root  bin  -  226K Aug 16  2010 /sbin/ping6
+-r-sr-x---  1 root  operator  -  194K Aug 16  2010 /sbin/shutdown
+```
+
+I also performed a scan for what files we can read, but the list is very exhaustive ... After using this command: `find / -type d \( -perm -o=r \) -exec ls -ldoha {} \;` the most interesting things were some files in the `/var/log` directory; the `/etc/` configuration directory (including SSH! The possibly vulnerable service we found which we can read the configuration for!)
+
+## What can we actually do here?
+Yeah ... Then there's that... SSH is in default configuration and not vulnerable to the OpenSSH wildcard exploit it seems :( And here we are ...
+
 
 # Scan Results (OpenVAS)
 
