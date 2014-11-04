@@ -1,0 +1,163 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Simple Sectioned Essay Template
+% LaTeX Template
+%
+% This template has been downloaded from:
+% http://www.latextemplates.com
+%
+% Note:
+% The \lipsum[#] commands throughout this template generate dummy text
+% to fill the template out. These commands should all be removed when 
+% writing essay content.
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+
+\documentclass[12pt]{article} % Default font size is 12pt, it can be changed here
+
+\usepackage{geometry} % Required to change the page size to A4
+
+\usepackage[utf8]{inputenc} % Use this package to enable the use of special norwegian characters (æ, æ, å)
+
+\geometry{a4paper} % Set the page size to be A4 as opposed to the default US Letter
+
+\usepackage{graphicx} % Required for including pictures
+
+\usepackage{float} % Allows putting an [H] in \begin{figure} to specify the exact location of the figure
+\usepackage{wrapfig} % Allows in-line images such as the example fish picture
+
+\usepackage{cite}
+
+\usepackage{url}
+
+\usepackage{pdfpages}
+
+\usepackage{supertabular} % Used for tables
+
+\usepackage{tocbibind}
+
+\usepackage[parfill]{parskip} % Newline without indent
+
+\usepackage{lipsum} % Used for inserting dummy 'Lorem ipsum' text into the template
+
+\usepackage{array}
+\linespread{1.2} % Line spacing
+
+%\setlength\parindent{0pt} % Uncomment to remove all indentation from paragraphs
+
+\graphicspath{{./Graphics}} % Specifies the directory where pictures are stored
+
+\setcounter{tocdepth}{5} %to make it appears in TOC
+%\setcounter{secnumdepth}{5} %to make it numbered
+
+\usepackage{multirow}
+\usepackage{xcolor}
+\usepackage{listings} % needed for the inclusion of source code
+
+\begin{document}
+%----------------------------------------------------------------------------------------
+%	TITLE PAGE
+%----------------------------------------------------------------------------------------
+
+\begin{titlepage}
+
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}} % Defines a new command for the horizontal lines, change thickness here
+
+\center % Center everything on the page
+
+\textsc{\LARGE Høgskolen i Gjøvik}\\[0.5cm] % Name of your university/college
+\includegraphics[width=90px, height=90px]{./Graphics/Hig-logo.png}\\[0.8cm] % Include a department/university logo - this will require the graphicx package 403x403px
+\textsc{\Large Ethical hacking and penetration testing}\\[0.5cm] % Major heading such as course name
+\textsc{\large Group Project}\\[0.5cm] % Minor heading such as course title
+
+\HRule \\[0.4cm]
+{ \huge \bfseries Title}\\[0.4cm] % Title of your document
+\HRule \\[1.5cm]
+
+\begin{minipage}{0.44\textwidth}
+\begin{flushleft} \large
+%\emph{Authors:}\\
+Victor \textsc{Rudolfsson} - 120912\\ % Your name
+Tommy \textsc{B. Ingdal} - 120913\\ % Your name
+Halvor \textsc{Thoresen} - 120915\\ % Your name
+Anders \textsc{Lium} - 141598\\ % Your name
+\end{flushleft}
+\end{minipage}
+
+\vfill % Fill rest of the page with empty lines
+{\large \today}\\[3cm] % Date, change the \today to a set date if you want to be precise
+
+\end{titlepage}
+
+%----------------------------------------------------------------------------------------
+%	TABLE OF CONTENTS
+%----------------------------------------------------------------------------------------
+\tableofcontents % Include a table of contents
+\newpage % Begins the essay on a new page instead of on the same page as the table of contents 
+
+%----------------------------------------------------------------------------------------
+%	Executive Summary
+%----------------------------------------------------------------------------------------
+\include{ExecutiveSummary} % Includes the file that contains the introduction
+
+%----------------------------------------------------------------------------------------
+%	INTRODUCTION
+%----------------------------------------------------------------------------------------
+\include{Introduction} % Includes the file that contains the introduction
+
+%----------------------------------------------------------------------------------------
+%	Technical Summary
+%----------------------------------------------------------------------------------------
+\include{TechnicalSummary} % Includes the file that contains the introduction
+
+%----------------------------------------------------------------------------------------
+%	Appendix A - Topology
+%----------------------------------------------------------------------------------------
+\include{AppA-Topology} % Includes the file that contains the introduction
+
+%----------------------------------------------------------------------------------------
+%	Appendix B - Definitions
+%----------------------------------------------------------------------------------------
+\include{AppB-Definitions} % Includes the file that contains the introduction
+
+%----------------------------------------------------------------------------------------
+%	Appendix C - Tools
+%----------------------------------------------------------------------------------------
+\include{AppC-Tools} % Includes the file that contains the introduction
+
+%----------------------------------------------------------------------------------------
+%	Appendix D - Scan results
+%----------------------------------------------------------------------------------------
+\include{AppD-ScanResults} % Includes the file that contains the introduction
+
+%----------------------------------------------------------------------------------------
+%	Appendix E - Methods
+%----------------------------------------------------------------------------------------
+\include{AppE-Methods} % Includes the file that contains the introduction
+
+%----------------------------------------------------------------------------------------
+%	Appendix F - Risk Calculations
+%----------------------------------------------------------------------------------------
+\include{AppF-RiskCalc} % Includes the file that contains the introduction
+
+
+%----------------------------------------------------------------------------------------
+%	BIBLIOGRAPHY (References)
+%----------------------------------------------------------------------------------------
+\bibliographystyle{unsrt}
+\bibliography{Sources}
+%\begin{thebibliography}{99} % Bibliography - this is intentionally simple in this template
+
+%\bibitem[Figueredo and Wolf, 2009]{Figueredo:2009dg}
+%Figueredo, A.~J. and Wolf, P. S.~A. (2009).
+%\newblock Assortative pairing and life history strategy - a cross-cultural
+%  study.
+%\newblock {\em Human Nature}, 20:317--330.
+ 
+%\end{thebibliography}
+
+%----------------------------------------------------------------------------------------------------------------------------------------------------
+\end{document}

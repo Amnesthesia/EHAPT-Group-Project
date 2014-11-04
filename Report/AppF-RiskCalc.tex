@@ -1,0 +1,31 @@
+\section{Appendix F - Risk Calculations}
+
+In order to categorize the vulnerabilites that are found, we have to define the categorizing measure. \\
+In the penetration test has catogorized the vulnerabilites by risk. \\
+The risk is calculated by multiplying the impact (damage done) and Threat (chance of impact). \(Risk = Imapct * Threat\) \\
+\begin{table}[h]
+\centering
+\begin{tabular}{llllll}
+\multirow{6}{*}{Threat} & \multicolumn{5}{c}{Impact}                                                                                                                                             \\ \cline{3-6} 
+                        & \multicolumn{1}{l|}{}             & \multicolumn{1}{l|}{Low (1)} & \multicolumn{1}{l|}{Medium (2)} & \multicolumn{1}{l|}{High (3)} & \multicolumn{1}{l|}{Critical (4)} \\ \cline{2-6} 
+                        & \multicolumn{1}{l|}{Low (1)}      & \multicolumn{1}{l|}{1}       & \multicolumn{1}{l|}{2}          & \multicolumn{1}{l|}{3}        & \multicolumn{1}{l|}{4}            \\ \cline{2-6} 
+                        & \multicolumn{1}{l|}{Medium (2)}   & \multicolumn{1}{l|}{2}       & \multicolumn{1}{l|}{4}          & \multicolumn{1}{l|}{6}        & \multicolumn{1}{l|}{8}            \\ \cline{2-6} 
+                        & \multicolumn{1}{l|}{High (3)}     & \multicolumn{1}{l|}{3}       & \multicolumn{1}{l|}{6}          & \multicolumn{1}{l|}{9}        & \multicolumn{1}{l|}{12}           \\ \cline{2-6} 
+                        & \multicolumn{1}{l|}{Critical (4)} & \multicolumn{1}{l|}{4}       & \multicolumn{1}{l|}{8}          & \multicolumn{1}{l|}{12}       & \multicolumn{1}{l|}{16}           \\ \cline{2-6} 
+\end{tabular}
+\caption{Risk Table}
+\label{my-label}
+\end{table}
+
+For the risk score to be used practically, we have to compress them into smaller categories as seen in table 2.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|l|}
+\hline
+Low & Medium & High \\ \hline
+1-4 & 5-8    & 9-16 \\ \hline
+\end{tabular}
+\caption{Risk categorization}
+\label{my-label}
+\end{table}

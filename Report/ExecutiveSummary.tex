@@ -1,0 +1,18 @@
+\section{Executive Summary}
+
+EHAPT Group 3 has been given the task to conduct a penetration test against HiGs offline lab consisting of three VMWare images simulating three hosts in a lab network. At all times VMWare was set to “Host Only” network mode, to make sure no scanning or attacks by misfortune could be launched on other networks than the lab network.\\
+The goal of this penetration test was to gather as much information as possible of the lab network, and if possible gain access to one or more of the hosts. To obtain this Group 3 used Kali Linux and similar penetration testing platforms along with tools like Discovery \& Probing, Enumeration, Password cracking, Vulnerability assessment in OpenVAS/Nessus and Penetration using Metasploit.
+\subsection{Result Summary} 
+Using scanning, enumeration and vulnerability assessments, Group 3 were able to find the following information on the lab network worth checking further:
+\begin{itemize}
+	\item M1 runs an older version of Windows and is exposable for two known vulnerabilities of high criticality in the SMB version and the DNS Resolution.
+	\item M2 runs OpenBSD 3.x or 4.x, and with a potential vulnerable OpenSSH v 5.6 running.
+	\item M3 runs Linux 2.6.x, and with potential vulnerabilities for Lighttpd 1.4.26 and Telnet.
+\end{itemize}
+Using Wireshark for sniffing network traffic on the Linux host, Group 3 was able to see a Telnet connection going to an external IP address. Using a man-in-the-middle attack stealing the external IP with ARP poisoning, then using dsniff to listening on the Telnet connection, it became clear that the user “john” was sending his sudo password in clear text. Using this, Group 3 could log into the host using Telnet, change the password of the root user and escalate our privileges to root level.\\
+With root access to M3, Group 3 was able to extract the password hashes containing user names and passwords for two other network users, “user” and “jane”. Using a password cracker, it was possible to guess the password of both these users in relatively short time, as the passwords consisted of plain text only. \\
+Further, Group 3 discovered that the usernames and passwords from M3 were used on other hosts as well. With this, it was possible to log in with SAMBA “User” on M1 and with SSH “Jane” on M2 and thus obtaining access to all hosts in the lab network.\\
+Although not exploited in this penetration test, several other vulnerabilities were found as well. \\
+The Lighttpd 1.4.26 version running on M3 are vulnerable to SQL injection or Path traversal that this penetration tests documents could be utilized to cause Internal Server Error (possible DoS), and potentially also remote access shell although not documented here.\\
+The OpenSSH version running on M2, along with the discovered login information, were further exploitable in terms of Group 3 being able to list out more information on users on this host and existing shares.\\
+On the M1 host, the vulnerability related to DNS Resolution is known to be attackable using Denial-of-Service.\\
