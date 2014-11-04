@@ -1,1 +1,42 @@
 \section{Appendix C - Tools Utilised}
+
+    \subsection*{Nessus}
+    Nessus is a vulnerability scanner developed by Tenable Network Security. Today Nessus is on of the most used vulnerability scanners used in the pentesting field, alongside OpenVAS and CoreImpact.\\
+    In this penetration test, Nessus was used in the start of the project in order to discover vulnerable services and servers in the network.
+     
+    \subsection*{OpenVAS}
+    OpenVAS is a framework containing several services and tools related to vulnerability scanning. OpenVAS is open-source and free, making this product very popular amongst penetration testers worldwide.
+     
+    \subsection*{Metasploit}
+    Metasploit is a very popular, open-source, framework created by Rapid7. Metasploit Framework is a tool for developing and executing exploits against vulnerable services/hosts, and contains thousands of different exploits, targeting Windows, Linux, BSD etc.
+     
+    \subsection*{Hashcat}
+    Hashcat is a free password cracker with multi-gpu support. The authors claim that hashcat is the worlds fastest password cracker.\\
+    We used hashcat when cracking the password we found during our assessment of the network.
+     
+    \subsection*{HashID}
+    Hashid is a tool used to identify hashes. We used this tool to identify the hashes we found during the penetration test, in order to crack and recover the relevant passwords.
+     
+    \subsection*{NBTScan}
+    NBTScan is a command line tool used to scan for NETBIOS nameservers on a network (local or remote). We used this tool in order to find open shares on the network.
+     
+    \subsection*{Dsniff}
+    dsniff is a command line tool used to sniff passwords on a network. This tool handles everything from FTP and Telnet, to HTTP and RIP. This tool was used when we discovered the password transmitted over the Telnet protocol.
+     
+    \subsection*{Wireshark}
+    This free and open-source packet analyzer is mainly used for network troubleshooting and network analysis. Wireshark can sniff and analyze about any protocol used to transfer data over a network, and this information can later be dumped and saved to a .pcap file for later analysis.\\
+    This tool was used to sniff data going over the network and between the computers we did a penetration test on, in hope of finding anything that could be exploited.
+     
+    \subsection*{NMAP}
+    NMAP (Network Mapper) is a network scanner used to discover hosts and services on a network, and thus create a map of the network. NMAP was used in conjunction with Wireshark to map out the entire network, and collect information about the hosts and services running on the network.
+     
+    \subsection*{Python}
+    Python is a very poopular general-purpose programming language with a huge emphasis on code readability. We used this programming language to try out some exploits against the SMB protocol and a web server vulnerability.
+     
+    \subsection*{find}
+    find is a built-in command in linux, used to find files.\\
+    We used this command to find files with the setuid bit set, with the hope that one of those files could lead to command execution with root privileges.\\
+   \vspace{-0.5cm}\begin{lstlisting}
+find directory -user root -perm -4000 -exec ls -ldb {} \; >/tmp/filename
+\end{lstlisting}
+
