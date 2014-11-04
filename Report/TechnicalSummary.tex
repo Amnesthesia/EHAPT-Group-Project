@@ -525,8 +525,10 @@ Another idea was to run sshd as jane on a separate port, with a custom configura
  
 
 \paragraph{M1 - Windows Vista Business (6000)}
+had only one \textbf{High} rated vulnerability returned from the OpenVAS scan, and this was a SMB vulnerability. This vulnerability is a Denial of Service one, but that \textit{could} be used for Remote Code Execution. Using the Ruby scripts found on http://www.hexale.org/advisories/OCHOA-2010-0209.txt, a dead-end was reached when it required a logged in user on the Vista machine to open a HTML page and thus connect back to the attacking machine to sign the nonces.
 
+Had a user been logged in and performed any web requests, perhaps \textit{ARP poisoning} or \textit{DNS poisoning} had been possible to achieve this. Several exploits seem to exist for Vista SP1, but this Vista is Service Pack 0.
 
-
+The testing team 
 
 \subsubsection{Password Cracking}
